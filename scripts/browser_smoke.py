@@ -37,11 +37,16 @@ try:
         failed=next(i for i,e in enumerate(examples) if e['id']=='film_travel_reject')
         page.locator('#examples').select_option(str(failed));page.locator('#run').click()
         page.wait_for_function("document.querySelector('#status').textContent.includes('REJECTED')",timeout=180000)
-        page.frame_locator('#report').locator('.alert').wait_for()
+        page.frame_locator('#report').locator('.alert').filter(has_text='REJECTED').wait_for()
         page.screenshot(path=str(out/'application-rejected.png'),full_page=True)
+        with page.expect_download() as rejected_download:page.locator('#download').click()
+        rejected_download.value.save_as(str(out/'ui-rejected-report.zip'))
+        with zipfile.ZipFile(out/'ui-rejected-report.zip') as z:
+            assert json.loads(z.read('result.json'))['decision']=='REJECTED'
+            assert not any(n.endswith(('.stl','.step','.3mf')) for n in z.namelist())
         assert not errors,errors
         browser.close()
-    (out/'result.json').write_text(json.dumps({'status':'PASS','engine':'Chromium via Playwright','checks':['input edited to 20 mm','real CAD generation','report iframe','ZIP download and CAD files','modified geometry dimension verified','travel rejection shown','no JavaScript errors']},indent=2))
+    (out/'result.json').write_text(json.dumps({'status':'PASS','engine':'Chromium via Playwright','checks':['input edited to 20 mm','real CAD generation','report iframe','ZIP download and CAD files','modified geometry dimension verified','travel rejection shown','rejected ZIP contains report but no CAD','no JavaScript errors']},indent=2))
 finally:
     process.terminate()
     try:process.wait(timeout=5)
