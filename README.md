@@ -8,7 +8,7 @@
 
 1. [Actions](https://github.com/pikachu444/auto-fixture-design/actions/workflows/fixture-ci.yml)에서 최신 완료 실행을 엽니다.
 2. **Artifacts → fixture-results-커밋SHA**를 다운로드합니다.
-3. 압축을 풀고 `suite/index.html`을 열면 전체 사례를 볼 수 있습니다. 각 사례 폴더에 CAD, HTML/Markdown 보고서, JSON, BOM이 있습니다.
+3. 압축을 풀고 **`suite/REPORT.pdf`**를 열면 결과를 PDF로 바로 볼 수 있습니다. `suite/index.html`에는 사례별 상세 보고서가 있고, 각 사례 폴더에는 CAD, HTML/Markdown 보고서, JSON, BOM이 있습니다.
 
 `main`에 코드를 올리거나 PR을 만들 때 자동 실행하며 **Run workflow**로 수동 실행할 수도 있습니다. 저장 기간은 30일입니다. CI 성공은 계산·소프트웨어 회귀 검사 성공이며, 실물 제작 승인이 아닙니다.
 
@@ -66,11 +66,14 @@ python -m fixturelab generate --input examples/bend_8mm.json --output artifacts/
 python -m pip install -r requirements-dev.txt
 python -m pytest --junitxml=artifacts/unit-tests.xml
 python -m fixturelab suite --output artifacts/test-suite
+python scripts/build_ci_report.py --suite artifacts/test-suite --output artifacts/test-suite/REPORT.pdf
 python -m playwright install chromium
 python scripts/browser_smoke.py
 ```
 
 브라우저 검사는 Chromium에서 시편 폭을 변경하고 실제 CAD를 생성한 뒤 ZIP 내부 치수가 바뀌었는지 확인합니다. 이어서 이동량 부족 사례가 거부되는지 검사합니다. GitHub Actions는 브라우저 실행에 필요한 Linux 시스템 라이브러리도 설치합니다.
+
+로컬 PDF 생성에는 한국어 TrueType 글꼴이 필요합니다. CI에서는 `fonts-nanum`을 설치해 PDF에 글꼴을 포함합니다. Windows에서는 시스템의 맑은 고딕을 사용합니다.
 
 ## 구성
 
