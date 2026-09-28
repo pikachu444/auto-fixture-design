@@ -25,3 +25,22 @@ def test_real_cad_roundtrip(tmp_path):
     assert all(c['status']=='PASS' for c in r['cad_checks'])
     assert {'alignment_tray.stl','alignment_tray.3mf','assembly.step'}<={p.name for p in tmp_path.iterdir()}
     assert r['bom'][0]['bounds_mm']==pytest.approx([162,27.5,4])
+
+def test_bending_interfaces_detect_wrong_roller_height_and_blocked_slot():
+    import cadquery as cq
+    from fixturelab.cad import build
+    from fixturelab.core import evaluate
+    from fixturelab.functional_checks import bending_interfaces
+
+    result=evaluate(data('bend_8mm'))
+    parts=build(result)
+    assert all(c['status']=='PASS' for c in bending_interfaces(parts,result))
+    roller=next(p for p in parts if p['name']=='metal_roller_left')
+    original=roller['shape'];roller['shape']=original.translate(cq.Vector(0,0,1))
+    checks=bending_interfaces(parts,result)
+    assert any(c['code']=='roller_specimen_contact_left' and c['status']=='FAIL' for c in checks)
+    roller['shape']=original
+    base=next(p for p in parts if p['name']=='printed_base')
+    base['shape']=cq.Workplane('XY').box(220,80,12,centered=(True,True,False)).val()
+    checks=bending_interfaces(parts,result)
+    assert any(c['code']=='bolt_slot_clearance_span_128mm' and c['status']=='FAIL' for c in checks)

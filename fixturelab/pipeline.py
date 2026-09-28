@@ -38,6 +38,8 @@ def execute(data,output):
             centers=[p['shape'].Center().x for p in parts if 'metal_roller' in p['name']]
             observed=abs(centers[1]-centers[0]);required=result['metrics']['span_mm']
             checks.append({'code':'measured_roller_spacing','status':'PASS' if abs(observed-required)<1e-6 else 'FAIL','detail':{'measured_mm':observed,'required_mm':required}})
+            from .functional_checks import bending_interfaces
+            checks.extend(bending_interfaces(parts,result))
         if any(c['status']=='FAIL' for c in checks):result['decision']='COMPUTATION_ERROR'
         preview(parts,out/'preview.png')
     result['elapsed_seconds']=round(time.monotonic()-start,3)
