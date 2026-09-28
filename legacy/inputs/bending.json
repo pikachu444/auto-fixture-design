@@ -1,0 +1,8 @@
+{
+  "units": "mm_N_MPa",
+  "initial": {"width": 10, "thickness": 4, "length": 80, "elastic_modulus": 2000, "flexural_strength": 80, "target_strain": 0.005, "span_ratio": 16},
+  "modified": {"width": 10, "thickness": 8, "length": 200, "elastic_modulus": 2000, "flexural_strength": 80, "target_strain": 0.005, "span_ratio": 16},
+  "printer": {"name": "MK4S envelope reference only", "build": [250, 210, 220], "brim": 8, "edge_margin": 1, "profile_verified": false},
+  "equipment": {"name": "Zwick ProLine Z010 TH reference", "frame_capacity_N": 10000, "interface_verified": false, "load_cell_verified": false},
+  "design": {"original_base_length": 160, "original_max_span": 100, "new_base_length": 220, "new_max_span": 160, "base_width": 80, "base_thickness": 12, "design_load_factor": 1.25, "support_length": 32, "end_land": 14}
+}

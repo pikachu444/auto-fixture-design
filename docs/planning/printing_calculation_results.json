@@ -1,0 +1,106 @@
+{
+  "scope": "planning_arithmetic_only",
+  "not_verified": [
+    "cad_generation",
+    "slicing",
+    "mesh_quality",
+    "structural_strength",
+    "physical_printing",
+    "actual_cost"
+  ],
+  "check_count": 13,
+  "pass_count": 13,
+  "checks": [
+    {
+      "name": "P1_required_x",
+      "value": 262,
+      "expected": 262,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "P1_candidate_required_x",
+      "value": 238,
+      "expected": 238,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "P1_candidate_required_y",
+      "value": 138,
+      "expected": 138,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "P2_xy_utilization",
+      "value": 0.6,
+      "expected": 0.6,
+      "unit": "1",
+      "status": "PASS"
+    },
+    {
+      "name": "P2_z_utilization",
+      "value": 1.5,
+      "expected": 1.5,
+      "unit": "1",
+      "status": "PASS"
+    },
+    {
+      "name": "P3_min_before",
+      "value": 0.14000000000000057,
+      "expected": 0.14,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "P3_max_before",
+      "value": 0.35999999999999943,
+      "expected": 0.36,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "P3_min_after",
+      "value": 0.1399999999999988,
+      "expected": 0.14,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "P3_max_after",
+      "value": 0.2599999999999998,
+      "expected": 0.26,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "P4_mass",
+      "value": 160,
+      "expected": 160,
+      "unit": "g",
+      "status": "PASS"
+    },
+    {
+      "name": "P4_material_cost",
+      "value": 4800.0,
+      "expected": 4800,
+      "unit": "KRW",
+      "status": "PASS"
+    },
+    {
+      "name": "P4_energy_cost",
+      "value": 120.0,
+      "expected": 120,
+      "unit": "KRW",
+      "status": "PASS"
+    },
+    {
+      "name": "P4_total_direct_cost",
+      "value": 23420.0,
+      "expected": 23420,
+      "unit": "KRW",
+      "status": "PASS"
+    }
+  ]
+}

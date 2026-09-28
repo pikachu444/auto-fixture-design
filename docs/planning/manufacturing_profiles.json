@@ -1,0 +1,195 @@
+{
+  "schema_version": "1.1",
+  "status": "planning_not_qualified_for_production",
+  "cad": {
+    "primary_backend": "cadquery",
+    "source_of_truth": [
+      "generator.py",
+      "parameters.json",
+      "template_version",
+      "kernel_version"
+    ],
+    "optional_backend": "freecad_existing_fcstd",
+    "alternative_to_benchmark": "build123d"
+  },
+  "printer_reference": {
+    "id": "prusa_mk4s_reference",
+    "model": "Prusa MK4S",
+    "process": "FFF",
+    "as_installed_verified": false,
+    "build_volume": [
+      {
+        "value": 250,
+        "unit": "mm",
+        "provenance": "manufacturer_document",
+        "evidence_id": "S18"
+      },
+      {
+        "value": 210,
+        "unit": "mm",
+        "provenance": "manufacturer_document",
+        "evidence_id": "S18"
+      },
+      {
+        "value": 220,
+        "unit": "mm",
+        "provenance": "manufacturer_document",
+        "evidence_id": "S18"
+      }
+    ],
+    "initial_nozzle": {
+      "value": 0.4,
+      "unit": "mm",
+      "provenance": "project_assumption",
+      "evidence_id": null
+    },
+    "initial_layer_height": {
+      "value": 0.2,
+      "unit": "mm",
+      "provenance": "project_assumption",
+      "evidence_id": null
+    },
+    "firmware_version": null,
+    "slicer_version": null,
+    "profile_hash": null,
+    "verified_for_gcode": false,
+    "source_url": "https://www.prusa3d.com/product/original-prusa-mk4s-3d-printer/"
+  },
+  "slicer": {
+    "primary": "PrusaSlicer",
+    "mode": "separate_process",
+    "version": null,
+    "configuration_readback_required": true,
+    "remote_start_in_initial_scope": false
+  },
+  "material_candidates": [
+    {
+      "family": "PETG",
+      "role": "first_room_temperature_candidate",
+      "qualified": false,
+      "specimen_material_independent": true,
+      "manufacturer_grade": null,
+      "lot": null,
+      "recipe_id": null,
+      "allowables": null,
+      "temperature_time_humidity_range": null
+    },
+    {
+      "family": "PA_or_short_fiber_filled",
+      "role": "conditional_candidate",
+      "qualified": false
+    },
+    {
+      "family": "TPU",
+      "role": "contact_pad_candidate",
+      "qualified": false
+    }
+  ],
+  "recipe_required_fields": [
+    "nozzle_diameter",
+    "nozzle_material",
+    "layer_height",
+    "perimeters",
+    "infill_fraction",
+    "infill_pattern",
+    "top_bottom_layers",
+    "temperatures",
+    "speeds",
+    "cooling",
+    "drying",
+    "orientation",
+    "support",
+    "printer_id",
+    "material_grade",
+    "qualification_id"
+  ],
+  "part_routes": [
+    {
+      "test": "B1",
+      "printed": [
+        "base",
+        "support_bodies",
+        "position_stops"
+      ],
+      "purchased_or_machined": [
+        "rollers",
+        "indenter",
+        "fasteners",
+        "load_spreaders"
+      ],
+      "qualification": "UNKNOWN"
+    },
+    {
+      "test": "T1",
+      "printed": [
+        "alignment_guides",
+        "pad_backings",
+        "sensor_brackets"
+      ],
+      "purchased_or_machined": [
+        "main_grips",
+        "load_adapters",
+        "pins"
+      ],
+      "qualification": "UNKNOWN"
+    },
+    {
+      "test": "T3",
+      "printed": [
+        "grip_body_candidate",
+        "jaw_inserts"
+      ],
+      "purchased_or_machined": [
+        "fasteners",
+        "load_spreaders"
+      ],
+      "qualification": "UNKNOWN"
+    },
+    {
+      "test": "C1",
+      "printed": [
+        "ribbed_support_candidate",
+        "position_guides"
+      ],
+      "purchased_or_machined": [
+        "contact_plates",
+        "fasteners"
+      ],
+      "qualification": "UNKNOWN"
+    },
+    {
+      "test": "F2",
+      "printed": [
+        "clamp_housing_candidate",
+        "radius_insert_candidate",
+        "sensor_brackets"
+      ],
+      "purchased_or_machined": [
+        "shafts",
+        "bearings",
+        "wear_drive_parts",
+        "fasteners"
+      ],
+      "qualification": "UNKNOWN"
+    }
+  ],
+  "file_contract": {
+    "model.3mf": "geometry_and_units_not_implicitly_slicer_settings",
+    "print_project.3mf": "slicer_specific_project_when_supported",
+    "gcode": "requires_verified_machine_profile_not_generic",
+    "stl": "requires_external_units_and_revision_manifest"
+  },
+  "invalidates_qualification": [
+    "orientation",
+    "layer_height",
+    "perimeters",
+    "infill",
+    "material_grade",
+    "drying",
+    "temperatures",
+    "nozzle",
+    "geometry",
+    "postprocessing"
+  ],
+  "evidence_policy": "missing_allowables_or_profile_means_UNKNOWN_not_default_PASS"
+}

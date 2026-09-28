@@ -1,0 +1,227 @@
+{
+  "schema_version": "1.0",
+  "review_date": "2026-09-28",
+  "status": "planning_reference_not_as_installed_verification",
+  "machines": [
+    {
+      "id": "zwick_proline_z010_th_059011",
+      "manufacturer": "ZwickRoell",
+      "family": "ProLine",
+      "model": "Z010 TH",
+      "item_number": "059011",
+      "source_id": "S1",
+      "source_url": "https://www.zwickroell.com/products/static-materials-testing-machines/universal-testing-machines-for-static-applications/proline/",
+      "as_installed_verified": false,
+      "specification": {
+        "nominal_force": {
+          "value": 10000,
+          "unit": "N",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        },
+        "test_area_height_without_accessories": {
+          "value": 1450,
+          "unit": "mm",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        },
+        "crosshead_travel": {
+          "value": 1380,
+          "unit": "mm",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        },
+        "test_area_width": {
+          "value": 440,
+          "unit": "mm",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        },
+        "test_speed_min": {
+          "value": 0.0005,
+          "unit": "mm/min",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        },
+        "test_speed_max": {
+          "value": 1000,
+          "unit": "mm/min",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        },
+        "return_speed_max": {
+          "value": 1500,
+          "unit": "mm/min",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        },
+        "upper_tooling_mass_max": {
+          "value": 20,
+          "unit": "kg",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        },
+        "connection_stud_diameter": {
+          "value": 20,
+          "unit": "mm",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S1"
+        }
+      },
+      "conditions": [
+        "시험 공간 높이는 부속품 제외 값",
+        "제조사 자동 운전 조건 적용",
+        "TH형 상부 공구 질량 제한 적용",
+        "문 개방 시 속도 제한을 별도 적용"
+      ],
+      "required_unknowns": [
+        "installed_load_cell",
+        "grip_capacity",
+        "adapter_capacity",
+        "pin_drawing",
+        "connection_tolerances",
+        "usable_initial_position",
+        "calibration",
+        "lateral_load_limit",
+        "temperature_derating",
+        "actual_machine_geometry"
+      ]
+    },
+    {
+      "id": "instron_e1000_v9",
+      "manufacturer": "Instron",
+      "model": "ElectroPuls E1000",
+      "source_id": "S3",
+      "source_revision": "ElectroPuls E1000_POD_EN_V9",
+      "source_url": "https://www.instron.com/en/resources/literature/electropuls-e1000-testing-system/",
+      "as_installed_verified": false,
+      "specification": {
+        "dynamic_force_amplitude_max": {
+          "value": 1000,
+          "unit": "N",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S3"
+        },
+        "static_force_magnitude_max": {
+          "value": 710,
+          "unit": "N",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S3"
+        },
+        "total_stroke": {
+          "value": 60,
+          "unit": "mm",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S3"
+        },
+        "daylight_at_midstroke_max": {
+          "value": 610,
+          "unit": "mm",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S3"
+        },
+        "documented_load_cell_capacity_magnitude": {
+          "value": 2000,
+          "unit": "N",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S3"
+        }
+      },
+      "load_accuracy": {
+        "expression": "max(abs(reading)*reading_fraction,capacity_magnitude*capacity_fraction)",
+        "reading_fraction": {
+          "value": 0.005,
+          "unit": "1",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S3"
+        },
+        "capacity_fraction": {
+          "value": 5e-05,
+          "unit": "1",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S3"
+        },
+        "dynamic_accuracy_validated": false
+      },
+      "conditions": [
+        "60 mm는 총 스트로크",
+        "로드셀 용량을 액추에이터 용량으로 사용하지 않음",
+        "개구 높이는 중앙 스트로크 기준"
+      ],
+      "required_unknowns": [
+        "force_amplitude_frequency_envelope",
+        "moving_mass_limit",
+        "fixture_fatigue_rating",
+        "actual_mounting_interface",
+        "dynamic_sensor_validation",
+        "as_installed_geometry",
+        "chamber_compatibility"
+      ]
+    },
+    {
+      "id": "instron_68tm_10_comparison",
+      "manufacturer": "Instron",
+      "model": "68TM-10",
+      "source_id": "S2",
+      "as_installed_verified": false,
+      "implementation_role": "future_profile",
+      "specification": {
+        "nominal_force": {
+          "value": 10000,
+          "unit": "N",
+          "provenance": "manufacturer_document",
+          "evidence_id": "S2"
+        }
+      },
+      "required_unknowns": [
+        "exact_frame_option",
+        "geometry",
+        "force_speed_envelope",
+        "accessories",
+        "calibration"
+      ]
+    }
+  ],
+  "development_policy": {
+    "load_margin_factor": {
+      "value": 1.25,
+      "unit": "1",
+      "provenance": "project_assumption",
+      "evidence_id": null
+    },
+    "cad_dimension_regression_tolerance": {
+      "value": 0.01,
+      "unit": "mm",
+      "provenance": "project_assumption",
+      "evidence_id": null
+    },
+    "fixture_to_specimen_displacement_ratio_target": {
+      "value": 0.05,
+      "unit": "1",
+      "provenance": "project_assumption",
+      "evidence_id": null
+    },
+    "note": "공식 장비 보증값이나 보편적 안전율이 아닌 개발 정책"
+  },
+  "load_cell_capacity_groups_to_source": [
+    {
+      "value": 100,
+      "unit": "N",
+      "provenance": "project_assumption",
+      "evidence_id": null
+    },
+    {
+      "value": 1000,
+      "unit": "N",
+      "provenance": "project_assumption",
+      "evidence_id": null
+    },
+    {
+      "value": 10000,
+      "unit": "N",
+      "provenance": "project_assumption",
+      "evidence_id": null
+    }
+  ],
+  "unknown_field_policy": "null 또는 미등록은 UNKNOWN이며 0이나 무제한으로 치환하지 않는다"
+}

@@ -1,0 +1,238 @@
+{
+  "scope": "planning_arithmetic_only",
+  "not_verified": [
+    "product_software",
+    "FreeCAD_regeneration",
+    "collision_detection",
+    "structural_analysis",
+    "real_machine_suitability"
+  ],
+  "check_count": 32,
+  "pass_count": 32,
+  "checks": [
+    {
+      "name": "T1_force_lower",
+      "value": 1200,
+      "expected": 1200,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "T1_force_upper",
+      "value": 2000,
+      "expected": 2000,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "T1_design_force",
+      "value": 2500.0,
+      "expected": 2500,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "T2_extension",
+      "value": 500,
+      "expected": 500,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "T2_available_before",
+      "value": 450,
+      "expected": 450,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "T2_available_after",
+      "value": 600,
+      "expected": 600,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "T2_force_upper",
+      "value": 120,
+      "expected": 120,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "T3_force",
+      "value": 40.0,
+      "expected": 40,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "C1_force",
+      "value": 500.0,
+      "expected": 500,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "C1_displacement",
+      "value": 12.5,
+      "expected": 12.5,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "C2_force",
+      "value": 6000.0,
+      "expected": 6000,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "C2_specimen_displacement",
+      "value": 0.2,
+      "expected": 0.2,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "C2_fixture_displacement",
+      "value": 0.3,
+      "expected": 0.3,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "C2_apparent_E",
+      "value": 1200.0,
+      "expected": 1200,
+      "unit": "MPa",
+      "status": "PASS"
+    },
+    {
+      "name": "C2_required_fixture_K",
+      "value": 599999.9999999999,
+      "expected": 600000,
+      "unit": "N/mm",
+      "status": "PASS"
+    },
+    {
+      "name": "C3_force",
+      "value": 16000,
+      "expected": 16000,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "B1_elastic_force",
+      "value": 16.666666666666668,
+      "expected": 16.666666666666668,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "B1_displacement",
+      "value": 0.8533333333333334,
+      "expected": 0.8533333333333334,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "B1_strength_force",
+      "value": 133.33333333333334,
+      "expected": 133.33333333333334,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "B2_elastic_force",
+      "value": 33.333333333333336,
+      "expected": 33.333333333333336,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "B2_displacement",
+      "value": 1.7066666666666668,
+      "expected": 1.7066666666666668,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "B2_strength_force",
+      "value": 266.6666666666667,
+      "expected": 266.6666666666667,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "F1_surface_strain",
+      "value": 0.047619047619047616,
+      "expected": 0.047619047619047616,
+      "unit": "1",
+      "status": "PASS"
+    },
+    {
+      "name": "F1_alternative_strain",
+      "value": 0.019607843137254905,
+      "expected": 0.019607843137254905,
+      "unit": "1",
+      "status": "PASS"
+    },
+    {
+      "name": "F2_stroke",
+      "value": 18.84955592153876,
+      "expected": 18.84955592153876,
+      "unit": "mm",
+      "status": "PASS"
+    },
+    {
+      "name": "F2_vmax",
+      "value": 118.4352528130723,
+      "expected": 118.4352528130723,
+      "unit": "mm/s",
+      "status": "PASS"
+    },
+    {
+      "name": "F2_amax",
+      "value": 1.4883012806543912,
+      "expected": 1.4883012806543912,
+      "unit": "m/s2",
+      "status": "PASS"
+    },
+    {
+      "name": "F2_linear_inertia",
+      "value": 0.7441506403271956,
+      "expected": 0.7441506403271956,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "F2_hours",
+      "value": 20.833333333333332,
+      "expected": 20.833333333333332,
+      "unit": "h",
+      "status": "PASS"
+    },
+    {
+      "name": "F3_absolute_error",
+      "value": 0.1,
+      "expected": 0.1,
+      "unit": "N",
+      "status": "PASS"
+    },
+    {
+      "name": "F3_relative_error",
+      "value": 0.05,
+      "expected": 0.05,
+      "unit": "1",
+      "status": "PASS"
+    },
+    {
+      "name": "H1_width_excess",
+      "value": 10,
+      "expected": 10,
+      "unit": "mm",
+      "status": "PASS"
+    }
+  ]
+}

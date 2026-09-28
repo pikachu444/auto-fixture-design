@@ -1,0 +1,15 @@
+{
+  "CHANGELOG.md": "179fcabf096a7f58d7f05cb638424d35d4b3f0df644c2bb9078c81d40222a0c2",
+  "README.md": "b74ca68d67ddfb9b711f89476fca72503cc02b8e95ccfa79048091e8497b6f7e",
+  "acceptance_tests.csv": "d90a1fe05b89132bc95e06c5a545ac94c7bdfd0bfe57e7df9d74c92ac1cb4eff",
+  "equipment_profiles.json": "27dc47a70357b170f67e176d5c2a8440ec79aa14e160e221b207b693615b2467",
+  "fixture_plan.md": "89ec5f278ff2d4ba412f56dd92bc65ba227fa312e03640c36dfffbcb53f66fe9",
+  "manufacturing_profiles.json": "6b4fa9f59816191fced90f20a280c86a54466957bb4f9ae64bf26fabdc1741e4",
+  "planning_calculation_results.json": "1b85c57e905864fa8f4c64c82b7df7cb357ac2b8ec345a5687f1a92a9b8e4f0d",
+  "print_acceptance_tests.csv": "609f4bc392c2fcc0f4e377498a7a2011193b60c582215442cac892b59e313eb0",
+  "printing_calculation_results.json": "7d939f26eae7c333b674bb8fd271e86b1dcbb5dfa2a3faa87b30bc96eec16fce",
+  "printing_scenarios.json": "411c4af04a666d0d795adfb01bf4d649996975df10c6b24dbc20e3be6a835955",
+  "scenario_inputs.json": "259339218bedd3a93a9864611280d32d02e164a4dcd0363dc62ec7a471f7c17f",
+  "verify_planning_examples.py": "b52968a9f3f238d412635ced216c97f7f078cd513ecc6dd78792a3b4087d9177",
+  "verify_printing_examples.py": "7f7d4e8e8683e04a0f5e067d0a933e7ea53cb3ce0f023e9853f17b404538824f"
+}

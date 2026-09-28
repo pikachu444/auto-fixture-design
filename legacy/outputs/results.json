@@ -1,0 +1,540 @@
+{
+  "scope": "Executed three-point bending CAD prototype only",
+  "production_release": "UNKNOWN",
+  "not_verified": [
+    "printed material strength/anisotropy/creep",
+    "assembly stiffness/contact/fastener and roller retention",
+    "load cell calibration and usable range",
+    "machine interface and mounting adapter",
+    "slicer/G-code/physical print and load test",
+    "standards compliance"
+  ],
+  "checks": [
+    {
+      "name": "initial: reference frame capacity only",
+      "status": "PASS",
+      "detail": {
+        "design_load_N": 166.66666666666669,
+        "frame_capacity_N": 10000,
+        "system_approval": "UNKNOWN: load cell, tooling and mounting not verified"
+      }
+    },
+    {
+      "name": "initial: STEP roundtrip solid count",
+      "status": "PASS",
+      "detail": "15 solids"
+    },
+    {
+      "name": "initial: STEP volume preserved",
+      "status": "PASS",
+      "detail": {
+        "relative_error": 1.1162313083486261e-15
+      }
+    },
+    {
+      "name": "initial/printed_base: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/printed_base: STL watertight",
+      "status": "PASS",
+      "detail": {
+        "triangles": 2076,
+        "watertight": true
+      }
+    },
+    {
+      "name": "initial/printed_base: STL dimensions",
+      "status": "PASS",
+      "detail": "Tolerance 0.02 mm"
+    },
+    {
+      "name": "initial/printed_base: STL volume",
+      "status": "PASS",
+      "detail": "Mesh volume within 1% of BREP"
+    },
+    {
+      "name": "initial/printed_base: 3MF mm and mesh",
+      "status": "PASS",
+      "detail": {
+        "vertices": 2104,
+        "triangles": 2076,
+        "note": "geometry 3MF, no printer profile"
+      }
+    },
+    {
+      "name": "initial/printed_base: single-part print envelope",
+      "status": "PASS",
+      "detail": {
+        "occupied_mm": [
+          178.0,
+          98.0,
+          12.0
+        ],
+        "fits": true
+      }
+    },
+    {
+      "name": "initial/metal_bolt_left_-10_-12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/metal_bolt_left_-10_12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/metal_bolt_left_10_-12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/metal_bolt_left_10_12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/printed_support_left: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/printed_support_left: STL watertight",
+      "status": "PASS",
+      "detail": {
+        "triangles": 4316,
+        "watertight": true
+      }
+    },
+    {
+      "name": "initial/printed_support_left: STL dimensions",
+      "status": "PASS",
+      "detail": "Tolerance 0.02 mm"
+    },
+    {
+      "name": "initial/printed_support_left: STL volume",
+      "status": "PASS",
+      "detail": "Mesh volume within 1% of BREP"
+    },
+    {
+      "name": "initial/printed_support_left: 3MF mm and mesh",
+      "status": "PASS",
+      "detail": {
+        "vertices": 4332,
+        "triangles": 4316,
+        "note": "geometry 3MF, no printer profile"
+      }
+    },
+    {
+      "name": "initial/printed_support_left: single-part print envelope",
+      "status": "PASS",
+      "detail": {
+        "occupied_mm": [
+          50.0,
+          58.0,
+          26.0
+        ],
+        "fits": true
+      }
+    },
+    {
+      "name": "initial/metal_roller_left: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/metal_bolt_right_-10_-12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/metal_bolt_right_-10_12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/metal_bolt_right_10_-12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/metal_bolt_right_10_12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/printed_support_right: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/printed_support_right: STL watertight",
+      "status": "PASS",
+      "detail": {
+        "triangles": 4316,
+        "watertight": true
+      }
+    },
+    {
+      "name": "initial/printed_support_right: STL dimensions",
+      "status": "PASS",
+      "detail": "Tolerance 0.02 mm"
+    },
+    {
+      "name": "initial/printed_support_right: STL volume",
+      "status": "PASS",
+      "detail": "Mesh volume within 1% of BREP"
+    },
+    {
+      "name": "initial/printed_support_right: 3MF mm and mesh",
+      "status": "PASS",
+      "detail": {
+        "vertices": 4332,
+        "triangles": 4316,
+        "note": "geometry 3MF, no printer profile"
+      }
+    },
+    {
+      "name": "initial/printed_support_right: single-part print envelope",
+      "status": "PASS",
+      "detail": {
+        "occupied_mm": [
+          50.0,
+          58.0,
+          26.0
+        ],
+        "fits": true
+      }
+    },
+    {
+      "name": "initial/metal_roller_right: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/specimen: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial/metal_loading_nose: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "initial: measured roller spacing",
+      "status": "PASS",
+      "detail": 64.0
+    },
+    {
+      "name": "initial: initial-position interference",
+      "status": "PASS",
+      "detail": []
+    },
+    {
+      "name": "modified: reference frame capacity only",
+      "status": "PASS",
+      "detail": {
+        "design_load_N": 333.33333333333337,
+        "frame_capacity_N": 10000,
+        "system_approval": "UNKNOWN: load cell, tooling and mounting not verified"
+      }
+    },
+    {
+      "name": "modified: STEP roundtrip solid count",
+      "status": "PASS",
+      "detail": "15 solids"
+    },
+    {
+      "name": "modified: STEP volume preserved",
+      "status": "PASS",
+      "detail": {
+        "relative_error": 2.7915656761708117e-15
+      }
+    },
+    {
+      "name": "modified/printed_base: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/printed_base: STL watertight",
+      "status": "PASS",
+      "detail": {
+        "triangles": 2076,
+        "watertight": true
+      }
+    },
+    {
+      "name": "modified/printed_base: STL dimensions",
+      "status": "PASS",
+      "detail": "Tolerance 0.02 mm"
+    },
+    {
+      "name": "modified/printed_base: STL volume",
+      "status": "PASS",
+      "detail": "Mesh volume within 1% of BREP"
+    },
+    {
+      "name": "modified/printed_base: 3MF mm and mesh",
+      "status": "PASS",
+      "detail": {
+        "vertices": 2104,
+        "triangles": 2076,
+        "note": "geometry 3MF, no printer profile"
+      }
+    },
+    {
+      "name": "modified/printed_base: single-part print envelope",
+      "status": "PASS",
+      "detail": {
+        "occupied_mm": [
+          238.0,
+          98.0,
+          12.0
+        ],
+        "fits": true
+      }
+    },
+    {
+      "name": "modified/metal_bolt_left_-10_-12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/metal_bolt_left_-10_12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/metal_bolt_left_10_-12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/metal_bolt_left_10_12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/printed_support_left: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/printed_support_left: STL watertight",
+      "status": "PASS",
+      "detail": {
+        "triangles": 4316,
+        "watertight": true
+      }
+    },
+    {
+      "name": "modified/printed_support_left: STL dimensions",
+      "status": "PASS",
+      "detail": "Tolerance 0.02 mm"
+    },
+    {
+      "name": "modified/printed_support_left: STL volume",
+      "status": "PASS",
+      "detail": "Mesh volume within 1% of BREP"
+    },
+    {
+      "name": "modified/printed_support_left: 3MF mm and mesh",
+      "status": "PASS",
+      "detail": {
+        "vertices": 4332,
+        "triangles": 4316,
+        "note": "geometry 3MF, no printer profile"
+      }
+    },
+    {
+      "name": "modified/printed_support_left: single-part print envelope",
+      "status": "PASS",
+      "detail": {
+        "occupied_mm": [
+          50.0,
+          58.0,
+          26.0
+        ],
+        "fits": true
+      }
+    },
+    {
+      "name": "modified/metal_roller_left: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/metal_bolt_right_-10_-12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/metal_bolt_right_-10_12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/metal_bolt_right_10_-12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/metal_bolt_right_10_12: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/printed_support_right: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/printed_support_right: STL watertight",
+      "status": "PASS",
+      "detail": {
+        "triangles": 4316,
+        "watertight": true
+      }
+    },
+    {
+      "name": "modified/printed_support_right: STL dimensions",
+      "status": "PASS",
+      "detail": "Tolerance 0.02 mm"
+    },
+    {
+      "name": "modified/printed_support_right: STL volume",
+      "status": "PASS",
+      "detail": "Mesh volume within 1% of BREP"
+    },
+    {
+      "name": "modified/printed_support_right: 3MF mm and mesh",
+      "status": "PASS",
+      "detail": {
+        "vertices": 4332,
+        "triangles": 4316,
+        "note": "geometry 3MF, no printer profile"
+      }
+    },
+    {
+      "name": "modified/printed_support_right: single-part print envelope",
+      "status": "PASS",
+      "detail": {
+        "occupied_mm": [
+          50.0,
+          58.0,
+          26.0
+        ],
+        "fits": true
+      }
+    },
+    {
+      "name": "modified/metal_roller_right: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/specimen: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified/metal_loading_nose: valid BREP",
+      "status": "PASS",
+      "detail": "OpenCascade validity and positive volume"
+    },
+    {
+      "name": "modified: measured roller spacing",
+      "status": "PASS",
+      "detail": 128.0
+    },
+    {
+      "name": "modified: initial-position interference",
+      "status": "PASS",
+      "detail": []
+    },
+    {
+      "name": "Reject unchanged fixture for modified specimen",
+      "status": "PASS",
+      "detail": {
+        "required_span_mm": 128,
+        "existing_max_mm": 100,
+        "decision": "REJECT"
+      }
+    },
+    {
+      "name": "Reject oversize 244 mm base with brim",
+      "status": "PASS",
+      "detail": {
+        "occupied_mm": [
+          262,
+          98,
+          12
+        ],
+        "fits": false
+      }
+    }
+  ],
+  "scenarios": {
+    "initial": {
+      "span_mm": 64,
+      "force_at_target_N": 16.666666666666668,
+      "deflection_at_target_mm": 0.8533333333333334,
+      "nominal_strength_load_N": 133.33333333333334,
+      "design_load_N": 166.66666666666669,
+      "base_length_mm": 160,
+      "max_span_mm": 100,
+      "specimen_input": {
+        "width": 10,
+        "thickness": 4,
+        "length": 80,
+        "elastic_modulus": 2000,
+        "flexural_strength": 80,
+        "target_strain": 0.005,
+        "span_ratio": 16
+      },
+      "printer_fit": {
+        "occupied_mm": [
+          178,
+          98,
+          12
+        ],
+        "fits": true
+      }
+    },
+    "modified": {
+      "span_mm": 128,
+      "force_at_target_N": 33.333333333333336,
+      "deflection_at_target_mm": 1.7066666666666668,
+      "nominal_strength_load_N": 266.6666666666667,
+      "design_load_N": 333.33333333333337,
+      "base_length_mm": 220,
+      "max_span_mm": 160,
+      "specimen_input": {
+        "width": 10,
+        "thickness": 8,
+        "length": 200,
+        "elastic_modulus": 2000,
+        "flexural_strength": 80,
+        "target_strain": 0.005,
+        "span_ratio": 16
+      },
+      "printer_fit": {
+        "occupied_mm": [
+          238,
+          98,
+          12
+        ],
+        "fits": true
+      }
+    }
+  },
+  "artifacts": [],
+  "check_summary": {
+    "PASS": 72,
+    "FAIL": 0
+  }
+}

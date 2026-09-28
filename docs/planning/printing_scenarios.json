@@ -1,0 +1,239 @@
+{
+  "schema_version": "1.1",
+  "scenarios": [
+    {
+      "id": "P1",
+      "title": "브림 포함 크기",
+      "provenance": "project_assumption",
+      "values": {
+        "part_x": {
+          "value": 244,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "brim_each": {
+          "value": 6,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "margin_each": {
+          "value": 3,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "bed_x": {
+          "value": 250,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "candidate_x": {
+          "value": 220,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "candidate_y": {
+          "value": 120,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "candidate_z": {
+          "value": 40,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "262 mm로 250 mm 초과; 수정안은 238×138×40 mm. 단순 상자 공간 검사이며 최종 배치·강도는 별도."
+    },
+    {
+      "id": "P2",
+      "title": "가상 방향별 허용응력",
+      "provenance": "project_assumption",
+      "values": {
+        "allowable_xy": {
+          "value": 20,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "allowable_z": {
+          "value": 8,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "assumed_stress": {
+          "value": 12,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "사용률0.6과1.5. 후자는 FAIL. 특정 재료 실측값이 아님."
+    },
+    {
+      "id": "P3",
+      "title": "가상 핀과 구멍 공차",
+      "provenance": "project_assumption",
+      "values": {
+        "pin": {
+          "value": 8,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "pin_tol": {
+          "value": 0.01,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "bore": {
+          "value": 8.25,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "bore_tol": {
+          "value": 0.1,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "bore_after": {
+          "value": 8.2,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "bore_after_tol": {
+          "value": 0.05,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "required_clearance_min": {
+          "value": 0.1,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "required_clearance_max": {
+          "value": 0.3,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "전0.14~0.36 mm FAIL, 후0.14~0.26 mm 조건 내. 실제 출력·후가공 정밀도는 실측 필요."
+    },
+    {
+      "id": "P4",
+      "title": "가상 제작 직접 비용",
+      "provenance": "project_assumption",
+      "values": {
+        "part_mass": {
+          "value": 120,
+          "unit": "g",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "support_mass": {
+          "value": 30,
+          "unit": "g",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "waste_mass": {
+          "value": 10,
+          "unit": "g",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "filament_price": {
+          "value": 30000,
+          "unit": "KRW/kg",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "average_power": {
+          "value": 0.15,
+          "unit": "kW",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "print_hours": {
+          "value": 4,
+          "unit": "h",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "energy_price": {
+          "value": 200,
+          "unit": "KRW/kWh",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "labor_hours": {
+          "value": 0.5,
+          "unit": "h",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "labor_rate": {
+          "value": 25000,
+          "unit": "KRW/h",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "metal_parts": {
+          "value": 6000,
+          "unit": "KRW",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "직접 비용23420원. 기계 감가·재출력·부가세 제외, 시장가격 아님."
+    },
+    {
+      "id": "P5",
+      "title": "검증 온도 범위 초과",
+      "provenance": "project_assumption",
+      "values": {
+        "use_temperature": {
+          "value": 80,
+          "unit": "degC",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "qualified_temperature_max": {
+          "value": 50,
+          "unit": "degC",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "등록된 검증 범위 밖. 해당 온도 구조 적합 UNKNOWN, qualified_range 검사 FAIL."
+    },
+    {
+      "id": "P6",
+      "title": "반복 수명",
+      "provenance": "project_assumption",
+      "values": {
+        "target_cycles": {
+          "value": 150000,
+          "unit": "cycle",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "정적 강도만 있으면 피로·마모 수명 UNKNOWN. 검사와 교환 기록 필요."
+    }
+  ]
+}

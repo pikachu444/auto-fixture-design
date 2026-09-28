@@ -1,0 +1,46 @@
+[
+  {
+    "file": "bend_4mm.json",
+    "expected": "REVIEW_REQUIRED"
+  },
+  {
+    "file": "bend_8mm.json",
+    "expected": "REVIEW_REQUIRED"
+  },
+  {
+    "file": "bend_span_reject.json",
+    "expected": "REJECTED"
+  },
+  {
+    "file": "bend_load_reject.json",
+    "expected": "REJECTED"
+  },
+  {
+    "file": "bend_printer_reject.json",
+    "expected": "REJECTED"
+  },
+  {
+    "file": "film_alignment.json",
+    "expected": "REVIEW_REQUIRED"
+  },
+  {
+    "file": "film_travel_reject.json",
+    "expected": "REJECTED"
+  },
+  {
+    "file": "foam_locator.json",
+    "expected": "REVIEW_REQUIRED"
+  },
+  {
+    "file": "foam_platen_reject.json",
+    "expected": "REJECTED"
+  },
+  {
+    "file": "fold_radius_former.json",
+    "expected": "REVIEW_REQUIRED"
+  },
+  {
+    "file": "fold_strain_reject.json",
+    "expected": "REJECTED"
+  }
+]

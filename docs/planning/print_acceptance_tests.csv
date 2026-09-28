@@ -1,0 +1,27 @@
+﻿test_id,scope,input_or_action,expected_result,verification_method,execution_status
+PRT-01,P1,244+브림12+여유6 mm,262>250 → 배치 FAIL,수치와 배치,NOT_RUN_product_not_implemented
+PRT-02,P1,220×120×40 mm+같은 여유,"238×138×40 상자 검사 PASS, 강도 별도",수치와 배치,NOT_RUN_product_not_implemented
+PRT-03,P2,"σ12, 허용XY20/Z8 MPa","사용률0.6/1.5, Z 방향 FAIL",방향 규칙,NOT_RUN_product_not_implemented
+PRT-04,P3,"핀8±0.01, 구멍8.25±0.10","틈새0.14~0.36, 요구최대0.30 초과",공차,NOT_RUN_product_not_implemented
+PRT-05,P3,후가공 구멍8.20±0.05,"틈새0.14~0.26, 조건 내",공차,NOT_RUN_product_not_implemented
+PRT-06,P4,가상 단가와 질량·시간,"직접 비용23420원, 추정·제외항목 명시",비용,NOT_RUN_product_not_implemented
+PRT-07,P5,"사용80°C, 검증범위≤50°C","범위 FAIL, 해당 온도 구조 UNKNOWN",재료 범위,NOT_RUN_product_not_implemented
+PRT-08,P6,"정적 자료만, 목표15만 회",피로·마모 UNKNOWN,수명,NOT_RUN_product_not_implemented
+PRT-09,공통,열린 메시 또는 뒤집힌 면,"출력 검증 실패, 원인 표시",메시,NOT_RUN_product_not_implemented
+PRT-10,공통,watertight지만 자체교차·얇은벽 존재,닫힘만으로 출력 적합 부여 금지,메시와 실제 경로,NOT_RUN_product_not_implemented
+PRT-11,공통,"모델 mm, STL을 inch로 해석",25.4배 치수 오류 검출,단위,NOT_RUN_product_not_implemented
+PRT-12,공통,단위 3MF 재불러오기,원본 치수·부품·배치 보존,파일 왕복,NOT_RUN_product_not_implemented
+PRT-13,공통,외벽·채움·방향 변경,이전 구조·레시피 검증 만료,변경 추적,NOT_RUN_product_not_implemented
+PRT-14,공통,3MF 내부 프로파일과 요청 프로파일 다름,실제 적용 설정 비교 후 불일치 검출,슬라이서 통합,NOT_RUN_product_not_implemented
+PRT-15,공통,"출력 성공코드, 빈 G-code 또는 부품누락",제작 파일 실패,슬라이서 통합,NOT_RUN_product_not_implemented
+PRT-16,공통,미등록 프린터 또는 펌웨어,특정 장비용 G-code 적합 확정 금지,장비,NOT_RUN_product_not_implemented
+PRT-17,공통,G-code 온도·경로가 장비 한계 초과,FAIL,제작 파일,NOT_RUN_product_not_implemented
+PRT-18,공통,미지원 명령·매크로·바이너리 형식,"UNKNOWN, 검증 완료 표시 금지",제작 파일,NOT_RUN_product_not_implemented
+PRT-19,공통,금속 롤러·볼트가 조립에 포함,"출력대상에서 제외, BOM에 유지",공정 분리,NOT_RUN_product_not_implemented
+PRT-20,공통,자연어로 작게 만들어줘,고정 시편·반경·지지간격 유지,의도 보존,NOT_RUN_product_not_implemented
+PRT-21,공통,BOM·출력물·CAD 개정 불일치,조립 패키지 무효,추적,NOT_RUN_product_not_implemented
+PRT-22,공통,메시 자동 복구 후 구멍 사라짐,"원본 차이 검출, 제작 확정 금지",복구 검증,NOT_RUN_product_not_implemented
+PRT-23,공통,6뷰·등각뷰 생성,"같은 CAD 개정의 실형상, 치수 및 방향 일치",시각 검사,NOT_RUN_product_not_implemented
+PRT-24,공통,외관은 정상이나 기준 치수·강성 실패,"실물 검사 FAIL, 사용 적합과 구분",현장 실측,NOT_RUN_product_not_implemented
+PRT-25,공통,채움률만으로 사출재 E 보정,검증 모델 없으면 구조 UNKNOWN,재료 모델,NOT_RUN_product_not_implemented
+PRT-26,공통,브림은 안 넘지만 서포트·금지구역과 겹침,배치 FAIL,배치,NOT_RUN_product_not_implemented

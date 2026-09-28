@@ -1,0 +1,37 @@
+{
+  "units": "mm_N_MPa",
+  "equipment": {
+    "frame_capacity": 10000,
+    "load_cell_capacity": 500,
+    "tool_capacity": 500,
+    "usable_travel": 40,
+    "jaw_width": 30,
+    "platen_width": 100,
+    "platen_length": 100
+  },
+  "printer": {
+    "build": [
+      250,
+      210,
+      220
+    ]
+  },
+  "design": {
+    "load_factor": 1.25,
+    "clearance": 0.25,
+    "brim": 8,
+    "edge_margin": 1
+  },
+  "id": "film_travel_reject",
+  "title": "고연신 필름: 설치 후 가용 스트로크 부족",
+  "type": "tensile",
+  "specimen": {
+    "width": 15,
+    "thickness": 0.2,
+    "length": 150,
+    "strength": 50,
+    "grip_gap": 100,
+    "target_strain": 0.8,
+    "engagement": 25
+  }
+}

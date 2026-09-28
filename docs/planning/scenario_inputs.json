@@ -1,0 +1,593 @@
+{
+  "schema_version": "1.0",
+  "load_margin_factor": {
+    "value": 1.25,
+    "unit": "1",
+    "provenance": "project_assumption",
+    "evidence_id": null
+  },
+  "scenarios": [
+    {
+      "id": "T1",
+      "method": "tension",
+      "title": "강한 플라스틱의 하중 초과",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 10,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "thickness": {
+          "value": 2,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "strength_lower": {
+          "value": 60,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "strength_upper": {
+          "value": 100,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "current_load_cell_capacity": {
+          "value": 1000,
+          "unit": "N",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "current_adapter_capacity": {
+          "value": 2000,
+          "unit": "N",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "예상 1200~2000 N, 설계 2500 N. 로드셀과 어댑터 FAIL.",
+      "assumptions": [],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "T2",
+      "method": "tension",
+      "title": "고무의 신장 공간 부족",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 4,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "thickness": {
+          "value": 2,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "free_length": {
+          "value": 100,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "target_engineering_strain": {
+          "value": 5,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "strength_upper": {
+          "value": 15,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "accessory_stack_before": {
+          "value": 800,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "accessory_stack_after": {
+          "value": 650,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "clearance": {
+          "value": 100,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "필요 신장 500 mm. 1450 mm 시험 공간에서 가용 450 mm는 FAIL, 수정 후 600 mm는 공간 검사 PASS.",
+      "assumptions": [
+        "균일 스트립이며 어깨부 변형과 그립 미끄러짐 없음",
+        "실제 크로스헤드 초기 위치는 별도 확인"
+      ],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "T3",
+      "method": "tension",
+      "title": "필름의 저하중 측정과 미끄러짐",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 10,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "thickness": {
+          "value": 0.05,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "strength_upper": {
+          "value": 80,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "measurement_interest_force": {
+          "value": 0.1,
+          "unit": "N",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "fictional_large_sensor_verified_lower": {
+          "value": 1,
+          "unit": "N",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "fictional_small_sensor_verified_lower": {
+          "value": 0.02,
+          "unit": "N",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "힘 40 N, 설계 50 N. 관심 하중 0.1 N을 포함하지 않는 센서는 FAIL. 마찰·손상 데이터 없으면 그립 UNKNOWN.",
+      "assumptions": [],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "C1",
+      "method": "compression",
+      "title": "발포재 압축",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 50,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "depth": {
+          "value": 50,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "height": {
+          "value": 25,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "target_strain": {
+          "value": 0.5,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "nominal_stress_upper": {
+          "value": 0.2,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "힘 500 N, 설계 625 N, 시편 변위 12.5 mm. 압축 곡선 또는 지정 응력 필요.",
+      "assumptions": [],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "C2",
+      "method": "compression",
+      "title": "지그 컴플라이언스 오염",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 10,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "depth": {
+          "value": 10,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "height": {
+          "value": 10,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "E": {
+          "value": 3000,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "target_strain": {
+          "value": 0.02,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "fixture_stiffness": {
+          "value": 20000,
+          "unit": "N/mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "allowed_displacement_ratio": {
+          "value": 0.05,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "힘 6000 N, 시편 0.2 mm, 지그 0.3 mm, 겉보기 E 1200 MPa. 필요한 지그 강성 600000 N/mm.",
+      "assumptions": [
+        "목표 변형률까지 선형 탄성으로 가정",
+        "프레임과 로드셀 컴플라이언스는 본 예제에서 제외"
+      ],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "C3",
+      "method": "compression",
+      "title": "본체 용량 초과",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 20,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "depth": {
+          "value": 20,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "target_nominal_stress": {
+          "value": 40,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "힘 16000 N, 설계 20000 N. 10 kN 본체 FAIL. 시편 치수 자동 변경 금지.",
+      "assumptions": [],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "B1",
+      "method": "bend3",
+      "title": "기본 굽힘",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 10,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "thickness": {
+          "value": 4,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "specimen_length": {
+          "value": 80,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "span": {
+          "value": 64,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "E": {
+          "value": 2000,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "elastic_surface_strain": {
+          "value": 0.005,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "nominal_flexural_strength": {
+          "value": 80,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "탄성 구간 힘 16.6667 N, 처짐 0.853333 mm. 강도 환산 하중 133.333 N.",
+      "assumptions": [
+        "소변형 선형보",
+        "강도 하중까지 선형 처짐 외삽 금지"
+      ],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "B2",
+      "method": "bend3",
+      "title": "두꺼운 시편의 지지 간격 부족",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 10,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "thickness": {
+          "value": 8,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "specimen_length": {
+          "value": 200,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "span_ratio": {
+          "value": 16,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "E": {
+          "value": 2000,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "elastic_surface_strain": {
+          "value": 0.005,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "nominal_flexural_strength": {
+          "value": 80,
+          "unit": "MPa",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "old_max_span": {
+          "value": 100,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "필요 span 128 mm. 기존 범위 FAIL. 탄성 힘 33.3333 N, 처짐 1.706667 mm. 강도 환산 266.667 N.",
+      "assumptions": [],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "B3",
+      "method": "bend3",
+      "title": "적층 복합재",
+      "provenance": "project_assumption",
+      "values": {
+        "width": {
+          "value": 20,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "total_thickness": {
+          "value": 2,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "적층과 방향별 물성 또는 신뢰할 수 있는 하중 곡선이 없으면 하중·손상 UNKNOWN.",
+      "assumptions": [],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "F1",
+      "method": "fold",
+      "title": "단층과 적층의 접힘 반경",
+      "provenance": "project_assumption",
+      "values": {
+        "thickness": {
+          "value": 0.2,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "width": {
+          "value": 20,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "inner_radius": {
+          "value": 2,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "alternative_inner_radius": {
+          "value": 5,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "단층 중심 중립면 가정에서 변형률 4.7619%. 반경 자동 변경 금지. 적층 손상은 별도 검증.",
+      "assumptions": [
+        "순수 원호 굽힘",
+        "중립면은 두께 중앙",
+        "막변형 없음"
+      ],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "F2",
+      "method": "fold",
+      "title": "15만 회 반복 접힘",
+      "provenance": "project_assumption",
+      "values": {
+        "relative_fold_angle_max": {
+          "value": 180,
+          "unit": "deg",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "pinion_pitch_radius": {
+          "value": 12,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "frequency": {
+          "value": 2,
+          "unit": "Hz",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "cycles": {
+          "value": 150000,
+          "unit": "cycle",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "linear_moving_mass": {
+          "value": 0.5,
+          "unit": "kg",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "스트로크 18.8496 mm, 최대 속도 7106.1 mm/min. 정적 장비 속도 FAIL. E1000 종합 동적 적합 UNKNOWN.",
+      "assumptions": [
+        "좌우 각도는 전체 접힘각의 절반",
+        "이상 랙 구동",
+        "순수 선형 관성 예제, 실제 회전 관성 별도"
+      ],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "F3",
+      "method": "fold",
+      "title": "접힘 저하중 센서 정확도",
+      "provenance": "project_assumption",
+      "values": {
+        "signal_force": {
+          "value": 2,
+          "unit": "N",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "sensor_capacity_magnitude": {
+          "value": 2000,
+          "unit": "N",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "reading_fraction": {
+          "value": 0.005,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "capacity_fraction": {
+          "value": 5e-05,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "target_relative_error": {
+          "value": 0.01,
+          "unit": "1",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "S3의 오차 식 적용 시 0.1 N, 상대 5%. 목표 1%에 대해 FAIL.",
+      "assumptions": [],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    },
+    {
+      "id": "H1",
+      "method": "environment",
+      "title": "가상 챔버 간섭",
+      "provenance": "project_assumption",
+      "values": {
+        "chamber_width": {
+          "value": 200,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "chamber_depth": {
+          "value": 200,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "chamber_height": {
+          "value": 300,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        },
+        "fixture_width": {
+          "value": 210,
+          "unit": "mm",
+          "provenance": "project_assumption",
+          "evidence_id": null
+        }
+      },
+      "expected_behavior": "정지 형상부터 폭 10 mm 초과 FAIL. 줄인 후에도 전 운동 경로 확인.",
+      "assumptions": [
+        "특정 제조사 챔버 사양이 아닌 개발 예제"
+      ],
+      "production_suitability": "UNKNOWN_until_as_installed_and_structure_verified"
+    }
+  ]
+}

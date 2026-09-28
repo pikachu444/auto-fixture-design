@@ -1,0 +1,54 @@
+﻿test_id,scope,input_or_action,expected_result,verification_method,execution_status
+CAL-01,T1,"10×2 mm, 60~100 MPa","1200~2000 N, 설계 2500 N",수치 기준,NOT_RUN_product_not_implemented
+CAL-02,T2,"자유 길이 100 mm, 신장률 500%",추가 신장 500 mm,수치 기준,NOT_RUN_product_not_implemented
+CAL-03,T2,"높이 1450, 부속품 800, 자유 길이 100, 여유 100","가용 450 mm, 필요 500 mm → FAIL",독립 공간 계산,NOT_RUN_product_not_implemented
+CAL-04,T2,부속품 높이 650 mm로 변경,"가용 600 mm, 공간 PASS; 종합은 미확인 항목 유지",독립 공간 계산,NOT_RUN_product_not_implemented
+CAL-05,T3,"단면 10×0.05 mm, 강도 80 MPa","40 N, 설계 50 N",수치 기준,NOT_RUN_product_not_implemented
+CAL-06,C1,"50×50×25 mm, 50%, 0.2 MPa","500 N, 설계 625 N, 변위 12.5 mm",수치 기준,NOT_RUN_product_not_implemented
+CAL-07,C2,"E3000 MPa, A100 mm², L10 mm, ε0.02","F6000 N, 시편 0.2 mm",수치 기준,NOT_RUN_product_not_implemented
+CAL-08,C2,지그 K20000 N/mm,"지그 0.3 mm, 겉보기 E1200 MPa",직렬 스프링 독립식,NOT_RUN_product_not_implemented
+CAL-09,C2,지그/시편 변형비 목표 5%,K지그 ≥600000 N/mm,수치 기준,NOT_RUN_product_not_implemented
+CAL-10,C3,"단면400 mm², 응력40 MPa","16000 N, 설계20000 N, 본체 FAIL",수치 기준,NOT_RUN_product_not_implemented
+CAL-11,B1,b10 h4 L64 E2000 ε0.005,"16.6666667 N, 0.8533333 mm",보 공식 독립값,NOT_RUN_product_not_implemented
+CAL-12,B2,b10 h8 L128 E2000 ε0.005,"33.3333333 N, 1.7066667 mm",보 공식 독립값,NOT_RUN_product_not_implemented
+CAL-13,F1,"h0.2, R안쪽2 mm","중립면2.1 mm, ε0.0476190476",순수 굽힘 독립값,NOT_RUN_product_not_implemented
+CAL-14,F2,"r12, 전체180°, 대칭 반각",총 stroke18.8495559 mm,기구학 독립값,NOT_RUN_product_not_implemented
+CAL-15,F2,"2 Hz, A9.42477796 mm","vmax118.4352528 mm/s, amax1.4883013 m/s²",조화 운동 기준값,NOT_RUN_product_not_implemented
+CAL-16,F2,"15만 회, 2 Hz","20.8333333 h, 휴지 시간 제외",수치 기준,NOT_RUN_product_not_implemented
+CAL-17,F3,"센서2kN, 신호2N, S3 오차식","절대0.1 N, 상대5% → 목표1% FAIL",제조사 식 비교,NOT_RUN_product_not_implemented
+UNT-01,공통,N과 kN으로 같은 힘 입력,동일 결과,단위 변환,NOT_RUN_product_not_implemented
+UNT-02,공통,"MPa와 Pa, mm와 m의 동등 입력",동일 결과,단위 변환,NOT_RUN_product_not_implemented
+UNT-03,공통,500%와 무차원5 입력,동일 신장; 무단위500 거부,단위 변환,NOT_RUN_product_not_implemented
+UNT-04,공통,180 deg와 π rad 입력,동일 운동,단위 변환,NOT_RUN_product_not_implemented
+UNT-05,F2,"질량kg, 가속도mm/s²",1000배 오차 없이 N 변환,단위 변환,NOT_RUN_product_not_implemented
+DAT-01,공통,필수 허용하중 null,"UNKNOWN, PASS 금지",규칙,NOT_RUN_product_not_implemented
+DAT-02,공통,"음수 두께, NaN, 역전 물성 범위",입력 거부,입력 검증,NOT_RUN_product_not_implemented
+DAT-03,공통,제조사값과 가상값 혼합,각 값의 provenance 유지,데이터 검증,NOT_RUN_product_not_implemented
+PHY-01,T1,항복응력만 제공하고 파단시험 선택,최대 하중 UNKNOWN,적용 범위,NOT_RUN_product_not_implemented
+PHY-02,C1,"발포재 E만 제공, 50% 압축",대변형 하중 UNKNOWN,적용 범위,NOT_RUN_product_not_implemented
+PHY-03,B3,적층재를 등방성 E 하나로 입력,적층 손상·정밀 하중 UNKNOWN,적용 범위,NOT_RUN_product_not_implemented
+PHY-04,T2,덤벨 표점길이만으로 큰 신장 계산,그립 이동량 확정 금지,적용 범위,NOT_RUN_product_not_implemented
+LIM-01,공통,설계하중이 확인된 정격보다 작음/같음/큼,"≤는 해당 하중 검사 PASS, >는 FAIL; 별도 여유 경고",경계값,NOT_RUN_product_not_implemented
+LIM-02,공통,"본체10kN, 센서1kN, 설계2.5kN","센서 FAIL, 본체만으로 종합 PASS 금지",하중 경로,NOT_RUN_product_not_implemented
+LIM-03,F2,"E1000 정적800N, 동적 한계1000N",정적 용량710N 초과 FAIL,방향과 모드,NOT_RUN_product_not_implemented
+LIM-04,F2,"스트로크만 만족, 동적 운전 영역 없음",UNKNOWN,동적 조건,NOT_RUN_product_not_implemented
+LIM-05,T3,"관심0.1N, 보증하한1N",측정 범위 FAIL,측정 품질,NOT_RUN_product_not_implemented
+LIM-06,Zwick,상부 부착공구 합21kg,TH형20kg 초과 FAIL,질량,NOT_RUN_product_not_implemented
+LIM-07,Zwick,"시험속도1200, 복귀속도1500",시험속도1000 초과 FAIL,모드 구별,NOT_RUN_product_not_implemented
+INV-01,C3,후보 탐색에서 시편 단면 고정,단면 자동 축소 금지,불변조건,NOT_RUN_product_not_implemented
+INV-02,F1,반경2mm 고정,반경5mm를 같은 시험 성공으로 제시 금지,불변조건,NOT_RUN_product_not_implemented
+INV-03,B2,"시편길이80, 필요한 span128","FAIL, 지그 확대만으로 통과 금지",불변조건,NOT_RUN_product_not_implemented
+CAD-01,네 템플릿,파라미터 최소·대표·최대,"유효 솔리드, 측정 치수 오차≤0.01mm",실제 CadQuery 또는 등록된 CAD 엔진 실행,NOT_RUN_product_not_implemented
+CAD-02,네 템플릿,STEP 출력 후 다시 열기,솔리드 수·기준 치수·체적 보존,왕복 검사,NOT_RUN_product_not_implemented
+CAD-03,공통,재생성 실패·시간 초과,"작업 실패 표시, 이전 정상 원본 보존",장애 주입,NOT_RUN_product_not_implemented
+CAD-04,F2/H1,"시작·끝은 정상, 중간 위치 충돌",충돌 FAIL 및 위치 표시,경로 검사,NOT_RUN_product_not_implemented
+CAD-05,공통,표시 메시 버전과 CAD 버전 다름,"결과 사용 중지, 재생성 요청",버전 검사,NOT_RUN_product_not_implemented
+CAD-06,공통,스터드 직경만 있고 핀 치수 없음,"제작용 연결부 출력 보류, 검토용 표시",근거 검사,NOT_RUN_product_not_implemented
+UI-01,공통,결과 후 입력값 변경,이전 결과 만료 표시,전체 흐름,NOT_RUN_product_not_implemented
+UI-02,공통,문제 항목 클릭,해당 실제 3D 부품 강조,전체 흐름,NOT_RUN_product_not_implemented
+REP-01,공통,동일 입력·버전으로 재실행,"동일 계산과 판정, 파일 타임스탬프 차이는 허용",재현성,NOT_RUN_product_not_implemented
+REP-02,공통,결과 내보내기,입력·출처·규칙·CAD 버전·미확인 항목 포함,내용 검사,NOT_RUN_product_not_implemented
+INT-01,공통,네트워크 없이 프로그램 실행,"계산·CAD·화면 작동, CDN 필요 없음",패키지 시험,NOT_RUN_product_not_implemented
+INT-02,공통,"계산 PASS, 구조 미실행",종합 적합 금지; 구조 UNKNOWN 유지,상태 통합,NOT_RUN_product_not_implemented
+REAL-01,정적,실제 그립·센서 장착,치수·하중축·공간·측정 근거 확보,현장 실측,NOT_RUN_product_not_implemented
+REAL-02,반복 접힘,저속→목표속도→반복 단계,관성·발열·백래시·풀림·신호와 수명 기록,현장 실측,NOT_RUN_product_not_implemented
