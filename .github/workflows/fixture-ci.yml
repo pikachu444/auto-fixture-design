@@ -16,7 +16,7 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 50
     env:
       MPLBACKEND: Agg
       PYTHONUNBUFFERED: '1'
@@ -48,6 +48,17 @@ jobs:
         run: |
           sudo apt-get install -y fonts-nanum
           python scripts/build_ci_report.py --suite artifacts/suite --output artifacts/suite/REPORT.pdf
+      - name: Install pinned FreeCAD for native dimension authoring
+        run: |
+          curl --fail --location --retry 3 --silent --show-error \
+            https://github.com/FreeCAD/FreeCAD/releases/download/1.1.4/FreeCAD_1.1.4-Linux-x86_64-py311.AppImage \
+            --output /tmp/fixture-freecad.AppImage
+          echo 'f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43434  /tmp/fixture-freecad.AppImage' | sha256sum --check
+          chmod +x /tmp/fixture-freecad.AppImage scripts/freecad_appimage.sh
+          echo "FREECAD_APPIMAGE=/tmp/fixture-freecad.AppImage" >> "$GITHUB_ENV"
+          echo "FREECAD_CMD=$PWD/scripts/freecad_appimage.sh" >> "$GITHUB_ENV"
+      - name: Select native CAD dimensions and rebuild FreeCAD document
+        run: python -m scripts.run_native_cad
       - name: Generate traceable design verification report
         run: python -m scripts.build_design_verification_report --suite artifacts/suite --output artifacts/suite/DESIGN_VERIFICATION.pdf
       - name: Exercise application in Chromium

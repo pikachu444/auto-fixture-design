@@ -98,6 +98,14 @@ GitHub Actions는 저장소에 구현된 코드를 실행·테스트하고 결�
 
 등록 모델은 롤러 지지대 단품과 필름 정렬 트레이 두 개입니다. 기존 11개 실험/장비 제약 사례와 독립된 CAD 소스 수정 사례이며, 굽힘 전체 조립체 해석을 롤러 지지대 단품의 새 파라미터에 자동 재연결하지 않았습니다. STEP 형상 자체에는 CadQuery 파라미터 이력이 없습니다. 사용자가 신뢰하는 CAD 스크립트만 `models/`에 추가해야 하며, 출력물 강도와 실제 장착 검증은 별도입니다.
 
+### FreeCAD 원본의 치수 선택 및 정의
+
+`fixturelab/freecad_worker.py`는 편집 가능한 `.FCStd`를 열어 `Part` 피처의 길이·거리 속성과 Sketcher의 구동 길이/반경/지름 구속을 수집합니다. 사용자는 후보 중 대상 치수를 선택하고 이름·범위를 지정합니다. 대상 객체의 내부 이름과 속성 또는 이름 붙인 구속을 문서 내부 `FixtureConfiguration.Definition`에 저장합니다. 새로운 피처 치수는 서버의 고정 입력 스키마를 수정하지 않아도 목록에 나타납니다. 이름 붙인 구속과 원본 문서는 함께 저장·재열기 검사합니다.
+
+값 변경은 FreeCAD에서 해당 피처 속성 또는 `SketchObject.setDatum`에 적용하고 `recompute()`한 뒤 단일 유효 솔리드를 STEP으로 내보냅니다. 기존 CAD 파일 검사기가 STEP 재읽기·STL/3MF의 밀폐성·치수·체적을 검사합니다. 샘플은 볼트 구멍의 실제 중심/반경과 블록 외곽으로 최소 2 mm 여유도 따로 검사합니다. 다른 문서의 설계 규칙을 이 샘플 규칙으로 대체하지 않습니다. 실제 시험기 장착·출력 재료 허용값·체결 해석은 미구현이며, 편집 이력이 없는 STEP만으로 파라메트릭 피처를 역생성하지 않습니다.
+
+FreeCAD 공식 자료: [Sketcher 치수 구속 편집과 이름 지정](https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/Sketcher_Workbench.md), [Headless 실행과 스크립트](https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/Start_up_and_Configuration.md).
+
 GitHub 공식: [워크플로 아티팩트](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflow-artifacts), [수동 실행](https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow). CAD 공식: [CadQuery 입출력](https://cadquery.readthedocs.io/en/latest/importexport.html), [Trimesh](https://trimesh.org/).
 
 기존 기획의 79개 제품 인수 검사는 `docs/planning/`에 NOT_RUN 상태로 보존했습니다. 현재 11개 시나리오와 단위 검사는 제품 전체 완료를 의미하지 않습니다. 상용 CAD 라이선스 서버는 필요하지 않지만 각 오픈소스 의존성의 배포 조건은 별도로 따릅니다.

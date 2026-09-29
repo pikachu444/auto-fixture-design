@@ -30,6 +30,9 @@ def run(suite:Path,output:Path):
     model_summary_path=suite.parent/'models/summary.json'
     model_summary=json.loads(model_summary_path.read_text(encoding='utf-8')) if model_summary_path.is_file() else None
     if model_summary and model_summary['status']!='PASS':raise ValueError('CAD-source model results are incomplete')
+    native_path=suite.parent/'native_acceptance/result.json'
+    native_summary=json.loads(native_path.read_text(encoding='utf-8')) if native_path.is_file() else None
+    if native_summary and native_summary['status']!='PASS':raise ValueError('Native CAD authoring results are incomplete')
     a,b=cases['bend_4mm'],cases['bend_8mm']
     ma,mb=a['metrics'],b['metrics']
     sa,sb=a['input']['specimen'],b['input']['specimen']
@@ -185,8 +188,9 @@ def run(suite:Path,output:Path):
         story.append(grid(['기능','구현','실제 동작'],[
           ('예제 선택·숫자 변경','가능','브라우저 입력 폼에서 시편·장비·프린터 값 수정'),
           ('CAD 소스 파라미터 발견','가능' if model_summary else '별도 실행','CadQuery 소스의 숫자 선언과 메타데이터를 읽어 입력 폼 구성'),
+          ('CAD 피처 치수 선택·정의','가능' if native_summary else '별도 실행','FreeCAD 피처 길이·반경 또는 Sketcher 구동 치수 선택 후 이름·범위 지정'),
           ('CAD·규칙 재실행','가능','새 STEP/STL/3MF, 정적 PNG, HTML 보고서와 ZIP'),
-          ('3D 회전·형상 직접 편집','없음','정적 미리보기만 제공; STEP은 외부 CAD 필요'),
+          ('3D 면 클릭·임의 STEP 재파라미터화','없음','피처 트리와 구속을 사용; 3D 그림은 정적 미리보기'),
           ('화면에서 FEA 실행·응력 보기','없음','굽힘 1건의 FEA는 별도 CLI와 CI에서 실행'),
           ('자동 설계 개선/최적화','없음','템플릿 선택과 규칙 차단만 구현')
         ],[W*.29,W*.12,W*.59]))
@@ -215,6 +219,21 @@ def run(suite:Path,output:Path):
             story.append(box('적용 범위','새 CadQuery 소스 모델을 models/에 넣으면 동일 실행기가 입력을 읽습니다. 원본 스크립트의 코드 자체는 신뢰할 수 있어야 합니다. STEP 파일만으로 파라미터 이력은 복원되지 않으며, 이 지지대의 강도 FEA는 아직 연결하지 않았습니다.',LIGHT))
             story.append(p('실행 증거: artifacts/models/summary.json과 각 변형의 cad_source.py, result.json, assembly.step, STL/3MF, preview.png. 이 경로는 앞의 11개 실험 규칙 사례와 별도로 실행합니다.',small))
 
+        if native_summary:
+            page('07 · CAD 형상 치수를 사용자가 선택해 정의')
+            story.append(p('편집 가능한 FreeCAD 문서에는 시작할 때 노출된 사용자 파라미터가 0개입니다. 실행 중 형상 트리에서 치수 세 개를 사용자가 선택해 이름·범위를 붙인 뒤 같은 FCStd 파일에 저장했습니다. 정의를 추가해도 형상 생성 코드는 바뀌지 않습니다.',small))
+            story.append(Image(str(suite.parent/'native_acceptance/changed/preview.png'),width=W*.76,height=W*.76*560/1100))
+            section('선택한 CAD 요소 → 원본 문서 → 재생성')
+            story.append(grid(['형상 트리에서 고른 치수','사용자가 정의한 이름','실제 출력 근거'],[
+              ('SupportBlock.Length','my_support_width','32 → 38 mm; STEP 외곽 X = 38 mm'),
+              ('RollerCradle.Radius','selected_cradle_radius','4.15 → 5 mm; 홈 재계산'),
+              ('BoltBore1.Radius','selected_bore_radius','2.25 → 5 mm이면 외곽 여유 < 2 mm; REJECTED, STEP 없음')
+            ],[W*.32,W*.30,W*.38]))
+            story.append(Spacer(1,10))
+            story.append(box('확인 결과',f'원본 폭 {native_summary["original_bounds_mm"][0]:g} → 변경 폭 {native_summary["changed_bounds_mm"][0]:g} mm. CAD 파일 무결성 {native_summary["change_cad_checks_passed"]}건 통과. 저장한 FCStd를 다시 열어 사용자 정의 {native_summary["reopened_definition_count"]}개 확인.',LIGHT))
+            story.append(p('한계: Feature 속성과 Sketcher의 구동 치수가 있어야 선택할 수 있습니다. 임의 STEP 면 클릭만으로 설계 이력을 복원할 수는 없습니다. 이 모델의 실제 시험기 체결과 출력물 강도는 미검증입니다.',small))
+            story.append(p('원자료: native_acceptance/result.json, changed/editable.FCStd, native.step, assembly.step, STL/3MF 및 blocked/result.json.',tiny))
+
         def footer(canvas,document):
             canvas.saveState();canvas.setStrokeColor(RULE);canvas.line(18*mm,15*mm,A4[0]-18*mm,15*mm)
             canvas.setFont('KoreanVerification',7.5);canvas.setFillColor(INK)
@@ -225,7 +244,7 @@ def run(suite:Path,output:Path):
     reader=PdfReader(str(output));full='\n'.join(x.extract_text() or '' for x in reader.pages)
     for phrase in ('제작 승인 보류','수렴 미확인','자동 설계 개선/최적화','bend_load_reject'):
         if phrase not in full:raise RuntimeError(f'PDF is missing {phrase}')
-    if len(reader.pages)<(6 if model_summary else 5):raise RuntimeError('Report sections are missing')
+    if len(reader.pages)<(7 if native_summary else 6 if model_summary else 5):raise RuntimeError('Report sections are missing')
     print(f'Design verification report generated: {output} ({len(reader.pages)} pages)')
 
 

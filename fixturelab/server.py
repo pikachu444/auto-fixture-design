@@ -21,6 +21,19 @@ class Handler(BaseHTTPRequestHandler):
         if path=='/api/models':
             from .model_cad import catalogue
             return self.send(200,json.dumps(catalogue(),ensure_ascii=False))
+        native_file=re.fullmatch(r'/designs/([a-f0-9]{32})/(editable\.FCStd|preview\.png)',path)
+        if native_file:
+            from .native_cad import _path
+            try:
+                source=_path(native_file[1]);file=source if native_file[2]=='editable.FCStd' else source.parent/'preview.png'
+            except ValueError:return self.send(404,'{"error":"design missing"}')
+            if not file.is_file():return self.send(404,'{"error":"preview not available"}')
+            return self.send(200,file.read_bytes(),mimetypes.guess_type(str(file))[0] or 'application/octet-stream')
+        if path=='/api/native/inspect':
+            from urllib.parse import parse_qs
+            from .native_cad import inspect
+            try:return self.send(200,json.dumps(inspect(parse_qs(urlparse(self.path).query)['design'][0]),ensure_ascii=False))
+            except (ValueError,KeyError,IndexError,RuntimeError) as exc:return self.send(400,json.dumps({'error':str(exc)}))
         match=re.fullmatch(r'/jobs/([a-f0-9]{32})/([A-Za-z0-9_.-]+)',path)
         if not match:return self.send(404,'{"error":"not found"}')
         folder=ROOT/'artifacts/web'/match[1];file=folder/match[2]
@@ -33,6 +46,8 @@ class Handler(BaseHTTPRequestHandler):
         if not file.is_file():return self.send(404,'{"error":"not found"}')
         return self.send(200,file.read_bytes(),mimetypes.guess_type(str(file))[0] or 'application/octet-stream')
     def do_POST(self):
+        if self.path.startswith('/api/native/'):
+            return self.native_POST()
         if self.path not in ('/api/generate','/api/model/generate'):
             return self.send(404,'{"error":"not found"}')
         # No CORS; reject cross-origin browser requests to local compute endpoint.
@@ -65,6 +80,40 @@ class Handler(BaseHTTPRequestHandler):
             result=json.loads((output/'result.json').read_text())
             return self.send(200,json.dumps({'job':job,'decision':result['decision'],'report':f'/jobs/{job}/report.html','download':f'/jobs/{job}/bundle.zip','metrics':result.get('metrics',{})}))
         except subprocess.TimeoutExpired:return self.send(504,'{"error":"CAD generation exceeded 180 seconds"}')
+        finally:BUSY.release()
+
+    def native_POST(self):
+        origin=self.headers.get('Origin')
+        if origin and origin not in {f'http://127.0.0.1:{self.server.server_port}',f'http://localhost:{self.server.server_port}'}:
+            return self.send(403,'{"error":"origin denied"}')
+        action=self.path.removeprefix('/api/native/')
+        if action not in ('new','import','register','final','generate'):
+            return self.send(404,'{"error":"not found"}')
+        if not BUSY.acquire(blocking=False):return self.send(429,'{"error":"CAD generation already running"}')
+        try:
+            from . import native_cad
+            size=int(self.headers.get('Content-Length','0'))
+            maximum=25*1024*1024 if action=='import' else 65536
+            if size<=0 or size>maximum:raise ValueError('Request size is invalid')
+            body=self.rfile.read(size)
+            data={} if action=='import' else json.loads(body)
+            if action=='new':answer=native_cad.create_sample()
+            elif action=='import':answer=native_cad.import_document(body)
+            elif action=='register':
+                answer=native_cad.register(data['design'],data['target'],data['name'],
+                                           data['min'],data['max'],data.get('label'))
+            elif action=='final':answer=native_cad.select_final(data['design'],data['final'])
+            else:
+                job=uuid.uuid4().hex
+                result=native_cad.execute(data['design'],data['values'],ROOT/'artifacts/web'/job)
+                answer={'job':job,'decision':result['decision'],
+                        'report':f'/jobs/{job}/report.html','download':f'/jobs/{job}/bundle.zip',
+                        'bounds_mm':result.get('bounds_mm')}
+            return self.send(200,json.dumps(answer,ensure_ascii=False))
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            return self.send(400,json.dumps({'error':str(exc)},ensure_ascii=False))
+        except (RuntimeError,subprocess.TimeoutExpired) as exc:
+            return self.send(500,json.dumps({'error':str(exc)},ensure_ascii=False))
         finally:BUSY.release()
 
 def serve(port=8765):

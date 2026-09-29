@@ -67,9 +67,43 @@ try:
         with zipfile.ZipFile(out/'cad-source-rejected.zip') as z:
             assert json.loads(z.read('result.json'))['decision']=='REJECTED'
             assert not any(n.endswith(('.stl','.step','.3mf')) for n in z.namelist())
+        page.locator('#show-native').click()
+        page.locator('#native-new').click()
+        page.locator('#native-target option').first.wait_for(state='attached',timeout=180000)
+        page.locator('#native-target').select_option('SupportBlock|property|Length')
+        page.locator('#native-name').fill('browser_width')
+        page.locator('#native-min').fill('28')
+        page.locator('#native-max').fill('60')
+        page.locator('#native-definition button').click()
+        page.locator('input[name="native.browser_width"]').wait_for(timeout=180000)
+        page.locator('input[name="native.browser_width"]').fill('38')
+        page.locator('#native-values button').click()
+        page.wait_for_function("document.querySelector('#status').textContent.includes('REVIEW_REQUIRED')",timeout=180000)
+        page.frame_locator('#report').locator('h1').filter(has_text='FreeCAD').wait_for()
+        page.screenshot(path=str(out/'native-defined-parameter.png'),full_page=True)
+        with page.expect_download() as native_download:page.locator('#download').click()
+        native_download.value.save_as(str(out/'native-modified.zip'))
+        with zipfile.ZipFile(out/'native-modified.zip') as z:
+            assert {'editable.FCStd','native.step','native_printed_part.stl','native_printed_part.3mf'}<=set(z.namelist())
+            value=json.loads(z.read('result.json'))
+            assert value['bounds_mm'][0]==38 and value['parameters']['browser_width']==38
+        page.locator('#native-target').select_option('BoltBore1|property|Radius')
+        page.locator('#native-name').fill('browser_bore_radius')
+        page.locator('#native-min').fill('2')
+        page.locator('#native-max').fill('20')
+        page.locator('#native-definition button').click()
+        page.locator('input[name="native.browser_bore_radius"]').wait_for(timeout=180000)
+        page.locator('input[name="native.browser_bore_radius"]').fill('5')
+        page.locator('#native-values button').click()
+        page.wait_for_function("document.querySelector('#status').textContent.includes('REJECTED')",timeout=180000)
+        with page.expect_download() as blocked:page.locator('#download').click()
+        blocked.value.save_as(str(out/'native-rejected.zip'))
+        with zipfile.ZipFile(out/'native-rejected.zip') as z:
+            assert json.loads(z.read('result.json'))['decision']=='REJECTED'
+            assert not any(n.endswith(('.stl','.step','.3mf')) for n in z.namelist())
         assert not errors,errors
         browser.close()
-    (out/'result.json').write_text(json.dumps({'status':'PASS','engine':'Chromium via Playwright','checks':['input edited to 20 mm','real CAD generation','report iframe','ZIP download and CAD files','modified geometry dimension verified','travel rejection shown','rejected ZIP contains report but no CAD','CAD source parameters loaded into form','CAD source width change rebuilt STEP and STL','CAD source relation rejected invalid geometry','no JavaScript errors']},indent=2))
+    (out/'result.json').write_text(json.dumps({'status':'PASS','engine':'Chromium via Playwright','checks':['input edited to 20 mm','real CAD generation','report iframe','ZIP download and CAD files','modified geometry dimension verified','travel rejection shown','rejected ZIP contains report but no CAD','CAD source parameters loaded into form','CAD source width change rebuilt STEP and STL','CAD source relation rejected invalid geometry','FreeCAD feature dimension selected and named in browser','editable FCStd exported with modified STEP/STL/3MF','native hole edge land rejection without CAD','no JavaScript errors']},indent=2))
 finally:
     process.terminate()
     try:process.wait(timeout=5)
