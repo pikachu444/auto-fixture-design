@@ -16,6 +16,7 @@ import numpy as np
 
 from fixturelab.cad import build
 from fixturelab.core import evaluate
+from fixturelab.handcheck import bending_and_support
 
 
 def parse_gmsh_inp(path):
@@ -185,6 +186,9 @@ def run(data,material,out,sizes):
     for program in ('gmsh','ccx'):
         if not shutil.which(program):raise RuntimeError(f'Missing open-source executable: {program}')
     support=next(p['shape'] for p in build(result) if p['name']=='printed_support_left')
+    hand=bending_and_support(data,material,support)
+    if abs(hand['design_total_load_N']/result['metrics']['design_load_N']-1)>1e-10:
+        raise RuntimeError('Independent bending-load hand check disagrees with design calculation')
     out.mkdir(parents=True,exist_ok=True)
     step=out/'printed_support_left.step'
     cq.exporters.export(support,str(step))
@@ -226,7 +230,10 @@ def run(data,material,out,sizes):
     output={'case_id':data['id'],'status':'PRELIMINARY_ONLY_NOT_QUALIFIED',
             'model':'STEP -> Gmsh C3D10 -> CalculiX; single printed support',
             'material':material,'total_design_load_N':2*F,'force_per_support_N':F,
+            'analytical_scale_check':hand,
             'mesh_studies':studies,'displacement_mesh_change_ratio_last_two':rel,
+            'fea_to_idealized_axial_displacement_ratio':
+                fine['displacement']['max_abs_vertical_displacement_mm']/hand['ideal_uniform_axial_shortening_mm'],
             'limitations':['Fixed support bottom replaces actual bolts and base.',
                            'Roller contact replaced by distributed nodal force on cradle.',
                            'Example directional print properties are hypothetical, not measured coupon data.',

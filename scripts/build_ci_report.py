@@ -77,6 +77,8 @@ def run(suite:Path,output:Path):
                 result=f'표면 변형률 {fmt(m["outer_fiber_strain"]*100,"%")}; 허용 {fmt(s["allowable_strain"]*100,"%")}'
             rows.append((k,detail,result))
         story.append(grid(['사례','CAD에 반영한 시편과 지그 치수','입력 기반 계산'],rows,[W*.22,W*.42,W*.36]))
+        hand_matched=sum(r['specimen_hand_check']['status']=='MATCH' for r in reports.values())
+        story.append(text(f'병행 수계산: {hand_matched}/{len(reports)}개 입력에서 시편의 하중·이동량·변형률 중 해당 항목을 별도 산술 대조했습니다. 각 사례의 report.html/report.md에 계산값과 전제가 있습니다. 이는 동일 이상화 식의 독립 구현 검사이며 실제 물성이나 실험 적합성 검증은 아닙니다.',small))
         story.append(text('생성 CAD 미리보기',subtitle))
         thumbnails=[]
         for k in ['bend_8mm','film_alignment','foam_locator','fold_radius_former']:
@@ -111,8 +113,10 @@ def run(suite:Path,output:Path):
             fe=json.loads(structural.read_text(encoding='utf-8'))
             coarse,fine=fe['mesh_studies'][-2:]
             first=fe['mesh_studies'][0]
+            hand=fe['analytical_scale_check']
             story.extend([text('굽힘 출력 지지대 3D 유한요소 예비해석',subtitle),
                           text(f'Gmsh의 STEP 경계 근사 사면체 메시(C3D10)와 CalculiX를 사용했습니다. 지지대당 하중 {fmt(fe["force_per_support_N"]," N")}, 메시 크기 {fmt(first["mesh_size_max_mm"]," mm")} → {fmt(coarse["mesh_size_max_mm"]," mm")} → {fmt(fine["mesh_size_max_mm"]," mm")}, 최종 요소 수 {fine["elements_C3D10"]:,}개. 롤러 받침부 최대 수직 변위는 마지막 두 메시에서 {fine["displacement"]["max_abs_vertical_displacement_mm"]:.5f} mm이며 차이는 {fmt(fe["displacement_mesh_change_ratio_last_two"]*100,"%")}. 평균 절점 응력의 최대 von Mises 수치 {fmt(fine["stress_diagnostic"]["max_averaged_nodal_von_mises_MPa"]," MPa")}는 진단값이고 강도 판정값이 아닙니다. 상세 결과는 suite/structural_screen/에 있습니다.'),
+                          text(f'병행 수계산: 시편 명목 강도 대응 하중 {fmt(hand["nominal_strength_specimen_load_N"]," N")}, 설계하중 {fmt(hand["design_total_load_N"]," N")}, 지지대당 {fmt(hand["load_per_support_N"]," N")}. 지지대 총단면 {fmt(hand["gross_support_area_mm2"]," mm²")}의 평균 압축응력 {hand["nominal_gross_compressive_stress_MPa"]:.4f} MPa, 균일 축압축 변위 {hand["ideal_uniform_axial_shortening_mm"]:.5f} mm. 마지막 FEA 변위/단순 축변위 = {fe["fea_to_idealized_axial_displacement_ratio"]:.2f}. 구멍·롤러 접촉·비균일 하중을 생략한 규모 비교이며 강도 안전율이 아닙니다.',small),
                           text('출력 방향별 재료 물성은 측정값이 아닌 가정입니다. 지지대 하단 완전 고정·롤러 절점 하중을 적용했고 베이스·볼트·비선형 접촉·출력 강도는 생략했습니다. 변위 수렴은 강도나 응력 수렴을 증명하지 않습니다.',small)])
         story.extend([text('제품 판정',subtitle),
                       text('전체 제작 승인 상태는 UNKNOWN입니다. 굽힘 지그 강도, 체결, 시험기 장착부, 출력 소재와 방향, 슬라이싱, 실제 출력과 단계 하중 시험은 미검증입니다. 필름 정렬 및 폼 압축용 출력 부품은 하중 시험 전 제거해야 합니다. 반경 확인구는 반복 피로시험 장치가 아닙니다.'),

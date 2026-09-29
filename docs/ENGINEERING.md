@@ -88,6 +88,8 @@ OpenCascade 솔리드 유효성·양의 체적, STEP 재읽기의 솔리드 수�
 
 예제 `printed_material_ASSUMED.json`의 방향별 탄성계수·전단계수·포아송비는 근거가 없는 **소프트웨어 실행용 가정값**입니다. CalculiX의 직교이방성 탄성 입력을 사용하고 방향 1/2/3을 CAD X/Y/Z에 대응시킵니다. 실제 적층 방향과 시험편 측정 방향의 대응, 층간 강도, 기공·인필, 볼트 및 베이스, 접촉 비선형성, 실제 시험기 지지조건이 빠져 있습니다. 해석 변위는 경향 검토용이며 최댓값 응력의 메시 수렴이나 파손 안전율, 제작 승인을 주장하지 않습니다. 실제 설계 판정에는 장착 형상, 출력 공정별 물성·허용값, 접촉/체결 해석 및 시험 검증이 필요합니다.
 
+동일 입력에서 별도 `fixturelab/handcheck.py`가 모든 11개 사례의 시편 산술을 다시 계산합니다. 굽힘은 단순보 단면계수와 중앙 집중하중으로 하중/처짐을, 인장은 단면적·강도 하중·연신량을, 압축은 가압 면적·입력 응력에 따른 하중·높이 변화를, 접힘은 중립축 가정의 표면 변형률·최소 반경을 대조합니다. 이는 **같은 이상화 식을 다른 코드로 계산해 옮겨 적는 오류를 잡는 검사**이지 새로운 물리 모델의 검증이 아닙니다. 지지대마다 `P=F_design/2`, 총단면 평균응력 `σ=P/A_gross`, 균일 축변위 `δ=P H/(E_z A_gross)`를 계산해 FEA 접촉부 변위와 병행 표시합니다. 지지대 국부 하중·구멍·롤러 받침을 생략하므로 이 수계산은 **규모 점검**이지 FEA 검증이나 안전율이 아닙니다.
+
 GitHub Actions는 저장소에 구현된 코드를 실행·테스트하고 결과를 보관합니다. LLM이 무인으로 코드를 계속 작성하거나 검증 기준을 바꾸는 구조는 아닙니다. 개발은 Codex에서 이어가고, 각 변경이 CI의 동일 사례를 다시 통과하는지 확인하는 방식입니다.
 
 GitHub 공식: [워크플로 아티팩트](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflow-artifacts), [수동 실행](https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow). CAD 공식: [CadQuery 입출력](https://cadquery.readthedocs.io/en/latest/importexport.html), [Trimesh](https://trimesh.org/).

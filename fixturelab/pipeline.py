@@ -2,6 +2,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 import csv,hashlib,html,importlib.metadata,json,os,platform,subprocess,time
 from .core import evaluate
+from .handcheck import compare_specimen_scale_check
 
 ROOT=Path(__file__).resolve().parents[1]
 def provenance(data):
@@ -22,6 +23,7 @@ def execute(data,output):
     # Never leave a previous successful CAD beside a new rejected result.
     if out.exists() and any(out.iterdir()):raise ValueError('Output directory must be empty; use a new directory for each run')
     result=evaluate(data);out.mkdir(parents=True,exist_ok=True)
+    result['specimen_hand_check']=compare_specimen_scale_check(data,result['metrics'])
     result['provenance']=provenance(data);result['cad_checks']=[];result['bom']=[]
     if result['decision']!='REJECTED':
         from .cad import build,export_and_check
@@ -55,6 +57,10 @@ def execute(data,output):
 def report(r,out):
     d=r['input'];lines=[f'# {d["title"]}',f'\n**설계 판정: {r["decision"]} · 제작 승인: UNKNOWN**',f'\n용도: {r["use"]}', '\n계산 결과는 입력값에 따른 예측입니다. 장비의 실측값이나 실험 결과가 아닙니다.', '\n## 계산 결과','\n| 항목 | 값 |','|---|---:|']
     lines += [f'| {k} | {v:.6g} |' if isinstance(v,(int,float)) else f'| {k} | {v} |' for k,v in r['metrics'].items()]
+    hand=r['specimen_hand_check']
+    lines+=['\n## 병행 수계산',f'계산 일치: **{hand["status"]}** · 전제: {hand["premise"]}',
+            hand['interpretation'],'\n| 산출 항목 | 별도 계산값 |','|---|---:|']
+    lines += [f'| {k} | {v:.6g} |' for k,v in hand['values'].items()]
     lines+=['\n## 설계 검사','\n| 검사 | 상태 | 계산/입력 | 한계 | 근거 |','|---|---|---|---|---|']
     lines += [f'| {c["code"]} | {c["status"]} | {c["observed"]} | {c["limit"]} | {c["reason"]} |' for c in r['checks']]
     lines+=['\n## 실제 CAD 검사']+[f'- {c["code"]}: {c["status"]} — {json.dumps(c["detail"],ensure_ascii=False)}' for c in r['cad_checks']]
@@ -69,7 +75,8 @@ def report(r,out):
     metrics_table='<table>'+''.join('<tr><th>'+esc(metric_labels.get(k,k))+'</th><td>'+esc(format(v,'.6g') if isinstance(v,(int,float)) else v)+'</td></tr>' for k,v in r['metrics'].items())+'</table>'
     files=' '.join(f'<a href="{esc(name)}">{esc(name)}</a>' for name in r['files'])
     pic='<img src="preview.png" alt="Generated CAD geometry">' if r['cad_generated'] else '<p class="alert">설계 제약 위반: CAD를 생성하지 않았습니다.</p>'
-    document=f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(d['title'])}</title><style>body{{font:15px system-ui;max-width:1200px;margin:30px auto;padding:0 20px;color:#193447}}h1{{font-size:26px}}.alert{{background:#fff1d6;padding:16px;border-left:4px solid #cc8d24}}table{{border-collapse:collapse;width:100%;font-size:13px;margin:16px 0}}td,th{{padding:9px;border:1px solid #d8e2e9;text-align:left;overflow-wrap:anywhere}}img{{max-width:100%}}a{{display:inline-block;margin:5px;color:#176c8e}}pre{{white-space:pre-wrap;background:#f1f5f7;padding:16px}}@media print{{button{{display:none}}}}</style><h1>{esc(d['title'])}</h1><p class="alert">설계 판정: <b>{r['decision']}</b> · 제작 승인: <b>UNKNOWN</b></p><p>{esc(r['use'])}</p>{pic}<h2>계산 결과</h2>{metrics_table}<h2>설계 검사</h2><table><tr><th>검사</th><th>상태</th><th>계산/입력</th><th>한계</th><th>근거</th></tr>{rows}</table><h2>실제 CAD 검사</h2><table>{cadrows}</table><h2>미검증·사용 범위</h2><ul>{''.join('<li>'+esc(x)+'</li>' for x in r['limitations'])}</ul><h2>결과 파일</h2>{files}<h2>재현 정보</h2><pre>{esc(json.dumps(r['provenance'],indent=2))}</pre><details><summary>전체 입력</summary><pre>{esc(json.dumps(d,ensure_ascii=False,indent=2))}</pre></details><p>출처·모델 가정은 저장소 docs/ENGINEERING.md를 확인하세요. 수치는 입력 기반 계산이며 실측 결과가 아닙니다.</p><button onclick="window.print()">보고서 인쇄</button></html>'''
+    handrows=''.join(f'<tr><td>{esc(k)}</td><td>{esc(format(v,".6g"))}</td></tr>' for k,v in hand['values'].items())
+    document=f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(d['title'])}</title><style>body{{font:15px system-ui;max-width:1200px;margin:30px auto;padding:0 20px;color:#193447}}h1{{font-size:26px}}.alert{{background:#fff1d6;padding:16px;border-left:4px solid #cc8d24}}table{{border-collapse:collapse;width:100%;font-size:13px;margin:16px 0}}td,th{{padding:9px;border:1px solid #d8e2e9;text-align:left;overflow-wrap:anywhere}}img{{max-width:100%}}a{{display:inline-block;margin:5px;color:#176c8e}}pre{{white-space:pre-wrap;background:#f1f5f7;padding:16px}}@media print{{button{{display:none}}}}</style><h1>{esc(d['title'])}</h1><p class="alert">설계 판정: <b>{r['decision']}</b> · 제작 승인: <b>UNKNOWN</b></p><p>{esc(r['use'])}</p>{pic}<h2>계산 결과</h2>{metrics_table}<h2>병행 수계산</h2><p>산술 대조 {esc(hand['status'])}. {esc(hand['interpretation'])} {esc(hand['premise'])}</p><table>{handrows}</table><h2>설계 검사</h2><table><tr><th>검사</th><th>상태</th><th>계산/입력</th><th>한계</th><th>근거</th></tr>{rows}</table><h2>실제 CAD 검사</h2><table>{cadrows}</table><h2>미검증·사용 범위</h2><ul>{''.join('<li>'+esc(x)+'</li>' for x in r['limitations'])}</ul><h2>결과 파일</h2>{files}<h2>재현 정보</h2><pre>{esc(json.dumps(r['provenance'],indent=2))}</pre><details><summary>전체 입력</summary><pre>{esc(json.dumps(d,ensure_ascii=False,indent=2))}</pre></details><p>출처·모델 가정은 저장소 docs/ENGINEERING.md를 확인하세요. 수치는 입력 기반 계산이며 실측 결과가 아닙니다.</p><button onclick="window.print()">보고서 인쇄</button></html>'''
     (out/'report.html').write_text(document,encoding='utf-8')
 
 def run_suite(output):
