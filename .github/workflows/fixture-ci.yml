@@ -37,6 +37,11 @@ jobs:
         run: python -m pytest --junitxml=artifacts/unit-tests.xml
       - name: Generate all engineering scenarios and reports
         run: python -m fixturelab suite --output artifacts/suite
+      - name: Mesh real bending support CAD and run CalculiX
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gmsh calculix-ccx
+          python -m scripts.run_structural_screen --input examples/bend_8mm.json --material examples/printed_material_ASSUMED.json --output artifacts/suite/structural_screen
       - name: Generate readable PDF from actual suite results
         run: |
           sudo apt-get install -y fonts-nanum

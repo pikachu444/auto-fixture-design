@@ -1,0 +1,6 @@
+{
+  "elastic_modulus_MPa": 1800,
+  "poisson_ratio": 0.35,
+  "provenance": "HYPOTHETICAL isotropic demo values, not measured print data",
+  "qualification": "ASSUMED_NOT_MEASURED"
+}

@@ -82,6 +82,12 @@ OpenCascade 솔리드 유효성·양의 체적, STEP 재읽기의 솔리드 수�
 
 ## 자동 실행의 의미
 
+### 굽힘 출력 지지대의 구조해석 예비 검토
+
+`scripts/run_structural_screen.py`는 실제 출력 지지대 CAD를 STEP으로 내보내고 Gmsh에서 10절점 사면체(C3D10)를 생성한 뒤 CalculiX로 선형 정적 해석합니다. 지지대 하단 완전 고정, 설계 요구 하중의 절반을 각 지지대의 롤러 받침 곡면 근처 절점에 균등 분배한다는 **단순화된 경계조건**을 사용합니다. 사면체의 꼭짓점으로 계산한 메시 체적과 CAD 체적을 비교하고, 접촉부 수직 변위를 두 메시 크기에서 비교합니다. 절점 변위는 CalculiX 실제 출력 파일에서 추출하며 솔버 실행 실패나 누락된 결과는 CI 실패입니다.
+
+예제 `printed_material_ASSUMED.json`의 탄성계수·포아송비는 근거가 없는 **소프트웨어 실행용 가정값**입니다. 출력 방향에 따른 직교이방성, 층간 접합, 기공·인필, 볼트 및 베이스, 접촉 비선형성, 실제 시험기 지지조건이 빠져 있습니다. 해석 변위는 경향 검토용이며 최댓값 응력의 메시 수렴이나 파손 안전율, 제작 승인을 주장하지 않습니다. 실제 설계 판정에는 장착 형상, 출력 공정별 물성·허용값, 접촉/체결 해석 및 시험 검증이 필요합니다.
+
 GitHub Actions는 저장소에 구현된 코드를 실행·테스트하고 결과를 보관합니다. LLM이 무인으로 코드를 계속 작성하거나 검증 기준을 바꾸는 구조는 아닙니다. 개발은 Codex에서 이어가고, 각 변경이 CI의 동일 사례를 다시 통과하는지 확인하는 방식입니다.
 
 GitHub 공식: [워크플로 아티팩트](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflow-artifacts), [수동 실행](https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow). CAD 공식: [CadQuery 입출력](https://cadquery.readthedocs.io/en/latest/importexport.html), [Trimesh](https://trimesh.org/).
