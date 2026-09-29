@@ -1,6 +1,6 @@
 """Actual Chromium acceptance test: edit input, generate CAD, download and reject."""
 from pathlib import Path
-import io,json,socket,subprocess,sys,time,urllib.request,zipfile
+import io,json,re,socket,subprocess,sys,time,urllib.request,zipfile
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 out=ROOT/'artifacts/browser';out.mkdir(parents=True,exist_ok=True)
@@ -76,8 +76,22 @@ try:
             canvas.click(position={'x':bounds['width']*x,'y':bounds['height']*y})
             if '선택한 솔리드 면' in page.locator('#native-face-help').inner_text():break
         else:raise AssertionError('Clicking the FreeCAD solid did not select a face')
-        assert page.locator('#native-target option').count()>0
+        face_id=int(re.search(r'면 (\d+)',page.locator('#native-face-help').inner_text()).group(1))
+        suggested=page.evaluate('''async id => {
+            const data=await (await fetch(native.surface)).json();
+            const keys=data.faces.find(f=>f.id===id).candidate_keys;
+            return native.candidates.filter(c=>keys.includes(c.key)).map(c=>c.key);
+        }''',face_id)
+        assert suggested,'Sample face should have at least one existing driving dimension'
+        visible=page.locator('#native-target option').evaluate_all('(options)=>options.map(o=>o.value)')
+        assert visible==suggested,'Face click must narrow the actual selectable CAD dimensions'
         page.screenshot(path=str(out/'native-clicked-face.png'),full_page=True)
+        clicked_parameter=next((key for key in suggested if key!='SupportBlock|property|Length'),None)
+        assert clicked_parameter
+        page.locator('#native-target').select_option(clicked_parameter)
+        page.locator('#native-name').fill('browser_clicked_face')
+        page.locator('#native-definition button').click()
+        page.locator('input[name="native.browser_clicked_face"]').wait_for(timeout=180000)
         page.locator('#native-show-all').click()
         page.locator('#native-target').select_option('SupportBlock|property|Length')
         page.locator('#native-name').fill('browser_width')
