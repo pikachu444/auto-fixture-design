@@ -44,9 +44,32 @@ try:
         with zipfile.ZipFile(out/'ui-rejected-report.zip') as z:
             assert json.loads(z.read('result.json'))['decision']=='REJECTED'
             assert not any(n.endswith(('.stl','.step','.3mf')) for n in z.namelist())
+        page.locator('#show-models').click()
+        page.locator('#models option').first.wait_for(state='attached')
+        page.locator('#models').select_option(label='3점 굽힘 롤러 지지대')
+        page.locator('input[name="cad.support_width_mm"]').fill('38')
+        page.locator('#cad-run').click()
+        page.wait_for_function("document.querySelector('#status').textContent.includes('REVIEW_REQUIRED')",timeout=180000)
+        page.frame_locator('#report').locator('h1').filter(has_text='롤러 지지대').wait_for()
+        page.screenshot(path=str(out/'cad-source-parametric.png'),full_page=True)
+        with page.expect_download() as cad_download:page.locator('#download').click()
+        cad_download.value.save_as(str(out/'cad-source-modified.zip'))
+        with zipfile.ZipFile(out/'cad-source-modified.zip') as z:
+            assert {'cad_source.py','roller_support.stl','assembly.step'}<=set(z.namelist())
+            result=json.loads(z.read('result.json'))
+            assert result['parameters']['support_width_mm']==38
+            assert result['bom'][0]['bounds_mm'][0]==38
+        page.locator('input[name="cad.bolt_pitch_x_mm"]').fill('30')
+        page.locator('#cad-run').click()
+        page.wait_for_function("document.querySelector('#status').textContent.includes('REJECTED')",timeout=180000)
+        with page.expect_download() as blocked_download:page.locator('#download').click()
+        blocked_download.value.save_as(str(out/'cad-source-rejected.zip'))
+        with zipfile.ZipFile(out/'cad-source-rejected.zip') as z:
+            assert json.loads(z.read('result.json'))['decision']=='REJECTED'
+            assert not any(n.endswith(('.stl','.step','.3mf')) for n in z.namelist())
         assert not errors,errors
         browser.close()
-    (out/'result.json').write_text(json.dumps({'status':'PASS','engine':'Chromium via Playwright','checks':['input edited to 20 mm','real CAD generation','report iframe','ZIP download and CAD files','modified geometry dimension verified','travel rejection shown','rejected ZIP contains report but no CAD','no JavaScript errors']},indent=2))
+    (out/'result.json').write_text(json.dumps({'status':'PASS','engine':'Chromium via Playwright','checks':['input edited to 20 mm','real CAD generation','report iframe','ZIP download and CAD files','modified geometry dimension verified','travel rejection shown','rejected ZIP contains report but no CAD','CAD source parameters loaded into form','CAD source width change rebuilt STEP and STL','CAD source relation rejected invalid geometry','no JavaScript errors']},indent=2))
 finally:
     process.terminate()
     try:process.wait(timeout=5)

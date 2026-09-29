@@ -27,6 +27,9 @@ def run(suite:Path,output:Path):
     summary=json.loads((suite/'summary.json').read_text(encoding='utf-8'))
     cases={x['id']:json.loads((suite/x['id']/'result.json').read_text(encoding='utf-8')) for x in summary['results']}
     fe=json.loads((suite/'structural_screen/result.json').read_text(encoding='utf-8'))
+    model_summary_path=suite.parent/'models/summary.json'
+    model_summary=json.loads(model_summary_path.read_text(encoding='utf-8')) if model_summary_path.is_file() else None
+    if model_summary and model_summary['status']!='PASS':raise ValueError('CAD-source model results are incomplete')
     a,b=cases['bend_4mm'],cases['bend_8mm']
     ma,mb=a['metrics'],b['metrics']
     sa,sb=a['input']['specimen'],b['input']['specimen']
@@ -181,6 +184,7 @@ def run(suite:Path,output:Path):
         section('현재 화면의 기능 범위')
         story.append(grid(['기능','구현','실제 동작'],[
           ('예제 선택·숫자 변경','가능','브라우저 입력 폼에서 시편·장비·프린터 값 수정'),
+          ('CAD 소스 파라미터 발견','가능' if model_summary else '별도 실행','CadQuery 소스의 숫자 선언과 메타데이터를 읽어 입력 폼 구성'),
           ('CAD·규칙 재실행','가능','새 STEP/STL/3MF, 정적 PNG, HTML 보고서와 ZIP'),
           ('3D 회전·형상 직접 편집','없음','정적 미리보기만 제공; STEP은 외부 CAD 필요'),
           ('화면에서 FEA 실행·응력 보기','없음','굽힘 1건의 FEA는 별도 CLI와 CI에서 실행'),
@@ -190,6 +194,26 @@ def run(suite:Path,output:Path):
         story.append(p(f'저장소: https://github.com/pikachu444/auto-fixture-design<br/>실행: https://github.com/pikachu444/auto-fixture-design/actions/runs/{run_id}',small))
         story.append(p('입력: examples/bend_4mm.json, bend_8mm.json, printed_material_ASSUMED.json. 검사 코드: fixturelab/core.py, pipeline.py, handcheck.py, scripts/run_structural_screen.py. 원자료: Actions 아티팩트의 suite/ 폴더.',small))
         story.append(box('최종 판정','규칙과 CAD 생성의 자동화 시연 완료. 실제 3D 프린터 제작 및 시험기 하중 시험을 위한 설계 승인은 보류.',AMBER))
+
+        if model_summary:
+            page('06 · CAD 소스에서 정의한 파라미터 변경')
+            story.append(p('다음 두 모델의 치수 선언과 허용 범위는 models/의 CadQuery 파일 내부에 있습니다. 프로그램의 CAD 파라미터 화면은 CQGI가 소스에서 발견한 숫자 입력에 따라 구성됩니다. 두 모델은 서로 다른 변수 목록을 사용합니다.',small))
+            variants=model_summary['variants']
+            pictures=[]
+            for slug,caption in (('roller_default','롤러 지지대 · 폭 32 mm'),('roller_wider','롤러 지지대 · 폭 38 mm')):
+                pictures.append([Image(str(suite.parent/'models'/slug/'preview.png'),width=W*.45,height=W*.45*560/1100),p(caption,small)])
+            pair=Table([[pictures[0],pictures[1]]],colWidths=[W/2,W/2]);pair.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP')]))
+            story.append(pair)
+            section('CAD 파일 → 값 변경 → 실제 형상 검증')
+            story.append(grid(['CAD 소스 / 실험','모델의 입력값','실제 STEP 치수·검사'],[
+              ('models/roller_support.py · 원본','support_width_mm = 32',f'{variants["roller_default"]["bounds_mm"]} mm · CAD 검사 {variants["roller_default"]["cad_checks_passed"]}건'),
+              ('models/roller_support.py · 수정','support_width_mm = 38',f'{variants["roller_wider"]["bounds_mm"]} mm · CAD 검사 {variants["roller_wider"]["cad_checks_passed"]}건'),
+              ('models/film_tray.py · 수정','specimen_width_mm = 20',f'{variants["film_wider"]["bounds_mm"]} mm · CAD 검사 {variants["film_wider"]["cad_checks_passed"]}건'),
+              ('models/roller_support.py · 차단','bolt_pitch_x_mm = 30','모델 관계식 위반 · REJECTED · CAD 없음')
+            ],[W*.37,W*.26,W*.37]))
+            story.append(Spacer(1,9))
+            story.append(box('적용 범위','새 CadQuery 소스 모델을 models/에 넣으면 동일 실행기가 입력을 읽습니다. 원본 스크립트의 코드 자체는 신뢰할 수 있어야 합니다. STEP 파일만으로 파라미터 이력은 복원되지 않으며, 이 지지대의 강도 FEA는 아직 연결하지 않았습니다.',LIGHT))
+            story.append(p('실행 증거: artifacts/models/summary.json과 각 변형의 cad_source.py, result.json, assembly.step, STL/3MF, preview.png. 이 경로는 앞의 11개 실험 규칙 사례와 별도로 실행합니다.',small))
 
         def footer(canvas,document):
             canvas.saveState();canvas.setStrokeColor(RULE);canvas.line(18*mm,15*mm,A4[0]-18*mm,15*mm)
@@ -201,7 +225,7 @@ def run(suite:Path,output:Path):
     reader=PdfReader(str(output));full='\n'.join(x.extract_text() or '' for x in reader.pages)
     for phrase in ('제작 승인 보류','수렴 미확인','자동 설계 개선/최적화','bend_load_reject'):
         if phrase not in full:raise RuntimeError(f'PDF is missing {phrase}')
-    if len(reader.pages)<5:raise RuntimeError('Report sections are missing')
+    if len(reader.pages)<(6 if model_summary else 5):raise RuntimeError('Report sections are missing')
     print(f'Design verification report generated: {output} ({len(reader.pages)} pages)')
 
 

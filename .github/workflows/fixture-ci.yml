@@ -37,6 +37,8 @@ jobs:
         run: python -m pytest --junitxml=artifacts/unit-tests.xml
       - name: Generate all engineering scenarios and reports
         run: python -m fixturelab suite --output artifacts/suite
+      - name: Rebuild two CAD source models with model-owned parameters
+        run: python -m scripts.run_cad_models --output artifacts/models
       - name: Mesh real bending support CAD and run CalculiX
         run: |
           sudo apt-get update -qq

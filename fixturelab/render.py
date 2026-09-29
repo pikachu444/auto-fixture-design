@@ -4,7 +4,7 @@ matplotlib.use("Agg")
 from PIL import Image
 from .cad import mesh_of
 
-def rasterize(parts, width=1100, height=560):
+def rasterize(parts, width=1100, height=560, fit=False):
     # Orthographic depth-buffer rendering of actual CAD triangles.
     # Per-pixel depth avoids painter-order artifacts where components overlap.
     yaw,pitch=-.65,.55
@@ -13,10 +13,21 @@ def rasterize(parts, width=1100, height=560):
                 [np.sin(yaw)*np.cos(pitch),np.cos(yaw)*np.cos(pitch),np.sin(pitch)]])
     rgb=np.full((height,width,3),[245,247,250],dtype=np.uint8)
     depth=np.full((height,width),-np.inf)
-    scale=width/290
+    if fit:
+        bounds=[p['shape'].BoundingBox() for p in parts]
+        center=np.array([(min(b.xmin for b in bounds)+max(b.xmax for b in bounds))/2,
+                         (min(b.ymin for b in bounds)+max(b.ymax for b in bounds))/2,
+                         (min(b.zmin for b in bounds)+max(b.zmax for b in bounds))/2])
+        corners=np.array([[x,y,z] for b in bounds for x in (b.xmin,b.xmax)
+                                        for y in (b.ymin,b.ymax) for z in (b.zmin,b.zmax)])
+        projected=(corners-center)@R.T
+        span=np.ptp(projected,axis=0)
+        scale=min(.82*width/max(span[0],1),.82*height/max(span[1],1))
+    else:
+        center=np.array([0,0,22]);scale=width/290
     light=np.array([-.4,-.5,1]); light=light/np.linalg.norm(light)
     for part in parts:
-        mesh=mesh_of(part['shape']); v=(mesh.vertices-[0,0,22])@R.T
+        mesh=mesh_of(part['shape']); v=(mesh.vertices-center)@R.T
         v[:,0]=v[:,0]*scale+width/2; v[:,1]=v[:,1]*scale+height/2
         color=np.array(matplotlib.colors.to_rgb(part['color']))*255
         for f,normal in zip(mesh.faces,mesh.face_normals):
@@ -38,5 +49,5 @@ def rasterize(parts, width=1100, height=560):
     return rgb
 
 
-def preview(parts,path):
-    Image.fromarray(rasterize(parts)).save(path)
+def preview(parts,path,fit=False):
+    Image.fromarray(rasterize(parts,fit=fit)).save(path)

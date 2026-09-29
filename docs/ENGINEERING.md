@@ -92,6 +92,12 @@ OpenCascade 솔리드 유효성·양의 체적, STEP 재읽기의 솔리드 수�
 
 GitHub Actions는 저장소에 구현된 코드를 실행·테스트하고 결과를 보관합니다. LLM이 무인으로 코드를 계속 작성하거나 검증 기준을 바꾸는 구조는 아닙니다. 개발은 Codex에서 이어가고, 각 변경이 CI의 동일 사례를 다시 통과하는지 확인하는 방식입니다.
 
+### CAD 소스 정의 파라미터 (별도 경로)
+
+`models/*.py`는 CadQuery 편집기에서 직접 고치는 CAD 원본입니다. 파일 최상위의 숫자 할당을 CQGI가 파라미터로 추출하고 같은 파일의 `FIXTURE_META`에 단위·표시명·허용 범위를 둡니다. `fixturelab/model_cad.py`는 등록된 로컬 모델만 읽어 화면·CLI 입력에 따라 다시 실행합니다. 모델 내부 관계식과 수치 범위가 맞으면 CAD를 내보낸 후 BREP, STEP 재읽기, STL/3MF 밀폐성·치수·체적을 검사합니다. 실패하면 REJECTED로 기록하고 CAD 파일은 생성하지 않습니다. 원본 소스 SHA-256과 원본 파일을 결과에 함께 남깁니다.
+
+등록 모델은 롤러 지지대 단품과 필름 정렬 트레이 두 개입니다. 기존 11개 실험/장비 제약 사례와 독립된 CAD 소스 수정 사례이며, 굽힘 전체 조립체 해석을 롤러 지지대 단품의 새 파라미터에 자동 재연결하지 않았습니다. STEP 형상 자체에는 CadQuery 파라미터 이력이 없습니다. 사용자가 신뢰하는 CAD 스크립트만 `models/`에 추가해야 하며, 출력물 강도와 실제 장착 검증은 별도입니다.
+
 GitHub 공식: [워크플로 아티팩트](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflow-artifacts), [수동 실행](https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow). CAD 공식: [CadQuery 입출력](https://cadquery.readthedocs.io/en/latest/importexport.html), [Trimesh](https://trimesh.org/).
 
 기존 기획의 79개 제품 인수 검사는 `docs/planning/`에 NOT_RUN 상태로 보존했습니다. 현재 11개 시나리오와 단위 검사는 제품 전체 완료를 의미하지 않습니다. 상용 CAD 라이선스 서버는 필요하지 않지만 각 오픈소스 의존성의 배포 조건은 별도로 따릅니다.
