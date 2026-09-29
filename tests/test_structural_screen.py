@@ -5,7 +5,7 @@ import pytest
 
 from fixturelab.cad import build
 from fixturelab.core import evaluate
-from scripts.run_structural_screen import parse_gmsh_inp,write_deck
+from scripts.run_structural_screen import extract_vertical_displacements,parse_gmsh_inp,write_deck
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -42,3 +42,16 @@ def test_mesh_import_and_actual_support_boundary_deck(tmp_path):
 def test_mesh_import_rejects_surface_only(tmp_path):
     mesh=tmp_path/'bad.inp';mesh.write_text('*Node\n1,0,0,0\n*Element, type=S6\n1,1,1,1,1,1,1\n')
     with pytest.raises(RuntimeError,match='C3D10'):parse_gmsh_inp(mesh)
+
+
+def test_read_actual_solver_style_displacement_table(tmp_path):
+    dat=tmp_path/'job.dat'
+    dat.write_text('''displacements (vx,vy,vz) for set ROLLER_NODES and time 1.0000000E+00
+
+ 10  0.0000E+00  0.0000E+00 -2.2000E-02
+ 11  0.0000E+00  0.0000E+00 -3.1000E-02
+''')
+    out=extract_vertical_displacements(dat,{10,11})
+    assert out['max_abs_vertical_displacement_mm']==pytest.approx(.031)
+    with pytest.raises(RuntimeError,match='incomplete'):
+        extract_vertical_displacements(dat,{10,11,12})

@@ -83,7 +83,7 @@ def write_deck(path,nodes,elements,support,material,force_N):
     lines += [f'{n}, 3, {-force_N/len(loaded):.12g}' for n in loaded]
     lines += ['*NODE PRINT, NSET=ROLLER_NODES','U',
               '*NODE FILE, NSET=ROLLER_NODES','U',
-              '*EL FILE, ELSET=SUPPORT','S','*END STEP']
+              '*EL FILE','S','*END STEP']
     path.write_text('\n'.join(lines)+'\n')
     return {'fixed_node_count':len(fixed),'loaded_node_count':len(loaded),
             'mesh_corner_volume_mm3':approximate,'cad_volume_mm3':cad,
@@ -127,7 +127,7 @@ def run(data,material,out,sizes):
         folder=out/job;folder.mkdir()
         mesh=folder/'gmsh.inp'
         gmsh=subprocess.run(['gmsh',str(step.resolve()),'-3','-order','2','-format','inp','-o',str(mesh.resolve()),
-                             '-clmin',str(size/2),'-clmax',str(size),'-optimize','-nopopup','-v','2'],
+                             '-clmin',str(size/2),'-clmax',str(size),'-optimize','-optimize_ho','-nopopup','-v','2'],
                             cwd=folder,text=True,capture_output=True,timeout=180)
         (folder/'gmsh.log').write_text(gmsh.stdout+'\n'+gmsh.stderr)
         if gmsh.returncode or not mesh.is_file():raise RuntimeError(f'Gmsh failed: {folder/"gmsh.log"}')
@@ -137,7 +137,7 @@ def run(data,material,out,sizes):
         ccx=subprocess.run(['ccx',job],cwd=folder,text=True,capture_output=True,timeout=300)
         (folder/'ccx.log').write_text(ccx.stdout+'\n'+ccx.stderr)
         if ccx.returncode or not (folder/(job+'.frd')).is_file():
-            raise RuntimeError(f'CalculiX failed: {folder/"ccx.log"}')
+            raise RuntimeError(f'CalculiX failed: {folder/"ccx.log"}; tail: {ccx.stdout[-900:]} {ccx.stderr[-300:]}')
         disp=extract_vertical_displacements(folder/(job+'.dat'),
                                             {int(n) for n in re.findall(r'^([0-9]+), 3,',deck.read_text(),re.M)})
         studies.append({'mesh_size_max_mm':size,'nodes':len(nodes),'elements_C3D10':len(elements),
