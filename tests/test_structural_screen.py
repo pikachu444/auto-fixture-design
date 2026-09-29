@@ -5,7 +5,7 @@ import pytest
 
 from fixturelab.cad import build
 from fixturelab.core import evaluate
-from scripts.run_structural_screen import elastic_material_lines,extract_vertical_displacements,parse_gmsh_inp,quadratic_tet_jacobian_quality,write_deck
+from scripts.run_structural_screen import elastic_material_lines,extract_stress_diagnostic,extract_vertical_displacements,parse_gmsh_inp,quadratic_tet_jacobian_quality,write_deck
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -69,3 +69,18 @@ def test_directional_material_requires_positive_definite_compliance():
     material['nu_12']=8
     with pytest.raises(ValueError,match='positive definite'):
         elastic_material_lines(material)
+
+
+def test_parse_six_stress_components_and_reject_missing_nodes(tmp_path):
+    frd=tmp_path/'field.frd'
+    frd.write_text(''' -4  STRESS      6    1
+ -5  SXX
+ -1         1 1.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00
+ -1         2 0.00000E+00 0.00000E+00 0.00000E+00 1.00000E+00 0.00000E+00 0.00000E+00
+ -3
+''')
+    result=extract_stress_diagnostic(frd,{1:(0,0,0),2:(1,0,0)})
+    assert result['node_count']==2
+    assert result['max_averaged_nodal_von_mises_MPa']==pytest.approx(3**.5)
+    with pytest.raises(RuntimeError,match='incomplete'):
+        extract_stress_diagnostic(frd,{1:(0,0,0),2:(1,0,0),3:(2,0,0)})

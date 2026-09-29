@@ -154,6 +154,30 @@ def extract_vertical_displacements(dat,loaded):
             'min_vertical_displacement_mm':min(u[2] for u in records.values())}
 
 
+def extract_stress_diagnostic(frd,nodes):
+    """Read averaged nodal stress in ASCII FRD; diagnostic, not failure stress."""
+    text=frd.read_text(errors='replace')
+    if ' -4  STRESS' not in text:raise RuntimeError('CalculiX stress field not found')
+    block=text.rsplit(' -4  STRESS',1)[1].split('\n -3',1)[0]
+    records={}
+    for line in block.splitlines():
+        if not line.startswith(' -1'):continue
+        try:label=int(line[3:13])
+        except ValueError:continue
+        values=re.findall(r'[-+]?\d+\.\d+E[-+]\d+',line[13:])
+        if len(values)!=6:raise RuntimeError(f'Malformed six-component stress at node {label}')
+        sxx,syy,szz,sxy,syz,szx=map(float,values)
+        vm=math.sqrt(((sxx-syy)**2+(syy-szz)**2+(szz-sxx)**2)/2+
+                     3*(sxy*sxy+syz*syz+szx*szx))
+        records[label]=vm
+    if set(records)!=set(nodes):raise RuntimeError(f'Stress field incomplete: {len(records)}/{len(nodes)}')
+    peak=max(records,key=records.get)
+    return {'max_averaged_nodal_von_mises_MPa':records[peak],
+            'p95_averaged_nodal_von_mises_MPa':float(np.percentile(list(records.values()),95)),
+            'maximum_node_id':peak,'maximum_node_xyz_mm':nodes[peak],
+            'node_count':len(records)}
+
+
 def run(data,material,out,sizes):
     if data['type']!='bending':raise ValueError('Only printed bending supports are modeled')
     result=evaluate(data)
@@ -188,20 +212,21 @@ def run(data,material,out,sizes):
         if ccx.returncode or not (folder/(job+'.frd')).is_file():
             raise RuntimeError(f'CalculiX failed: {folder/"ccx.log"}; tail: {ccx.stdout[-900:]} {ccx.stderr[-300:]}')
         disp=extract_vertical_displacements(folder/(job+'.dat'),set(bc['loaded_node_ids']))
+        stress=extract_stress_diagnostic(folder/(job+'.frd'),nodes)
         studies.append({'mesh_size_max_mm':size,'nodes':len(nodes),'elements_C3D10':len(elements),
                         'minimum_quadratic_jacobian_mm3':min_jacobian,
-                        'boundary':bc,'displacement':disp,
+                        'boundary':bc,'displacement':disp,'stress_diagnostic':stress,
                         'files':{'mesh':str(mesh.relative_to(out)),
                                  'deck':str(deck.relative_to(out)),
                                  'field_results':f'{job}/{job}.frd'}})
-    coarse,fine=studies
+    coarse,fine=studies[-2:]
     delta=abs(coarse['displacement']['max_abs_vertical_displacement_mm']-
               fine['displacement']['max_abs_vertical_displacement_mm'])
     rel=delta/fine['displacement']['max_abs_vertical_displacement_mm']
     output={'case_id':data['id'],'status':'PRELIMINARY_ONLY_NOT_QUALIFIED',
             'model':'STEP -> Gmsh C3D10 -> CalculiX; single printed support',
             'material':material,'total_design_load_N':2*F,'force_per_support_N':F,
-            'mesh_studies':studies,'displacement_mesh_change_ratio':rel,
+            'mesh_studies':studies,'displacement_mesh_change_ratio_last_two':rel,
             'limitations':['Fixed support bottom replaces actual bolts and base.',
                            'Roller contact replaced by distributed nodal force on cradle.',
                            'Example directional print properties are hypothetical, not measured coupon data.',
@@ -215,10 +240,10 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--input',type=Path,required=True);p.add_argument('--material',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True);args=p.parse_args()
-    r=run(json.loads(args.input.read_text()),json.loads(args.material.read_text()),args.output,[4.0,3.0])
+    r=run(json.loads(args.input.read_text()),json.loads(args.material.read_text()),args.output,[4.0,3.0,2.0])
     print(json.dumps({'status':r['status'],'case_id':r['case_id'],
                       'meshes':[(v['elements_C3D10'],v['displacement']) for v in r['mesh_studies']],
-                      'displacement_mesh_change_ratio':r['displacement_mesh_change_ratio']}))
+                      'displacement_mesh_change_ratio_last_two':r['displacement_mesh_change_ratio_last_two']}))
 
 
 if __name__=='__main__':main()
