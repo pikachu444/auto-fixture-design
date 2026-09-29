@@ -80,6 +80,11 @@ def _datum(doc,entry):
         if obj.getTypeIdOfProperty(entry['property']) not in ('App::PropertyLength','App::PropertyDistance'):
             raise ValueError('The CAD property no longer has a length unit')
         return obj,entry['property']
+    if 'constraint_index' in entry:
+        index=entry['constraint_index']
+        if obj.TypeId=='Sketcher::SketchObject' and 0<=index<len(obj.Constraints) and obj.getDriving(index):
+            return obj,index
+        raise ValueError('Selected sketch dimension is not driving')
     for i,c in enumerate(obj.Constraints):
         if c.Name==entry['constraint'] and obj.getDriving(i):return obj,i
     raise ValueError('The named driving sketch constraint was deleted')
@@ -112,6 +117,67 @@ def inspect(doc):
     params=[{**p,'value':_read(doc,p)} for p in registry['parameters']]
     return {'parameters':params,'candidates':candidates,'final':registry['final'],
             'final_candidates':solids,'document':doc.Label}
+
+
+def _face_metric(face):
+    b=face.BoundBox;c=face.CenterOfMass
+    return (type(face.Surface).__name__,face.Area,c.x,c.y,c.z,
+            b.XMin,b.XMax,b.YMin,b.YMax,b.ZMin,b.ZMax)
+
+
+def _face_changed(before,after):
+    if before[0]!=after[0]:return True
+    return _changes_shape(before[1:],after[1:])
+
+
+def surface_selection(doc):
+    """Exact final BREP face tessellation; face-to-dimension links are suggestions.
+
+    A small perturbation tests which existing driving dimensions alter each face.
+    Face numbers can change after a topology change, so such probes do not create
+    a mapping. This is deliberately not reverse engineering of a STEP file.
+    """
+    registry=_registry(doc);final=_final(doc,registry);shape=final.Shape
+    if shape.isNull() or not shape.isValid() or len(shape.Solids)!=1:
+        raise ValueError('Final CAD shape must contain one valid solid')
+    if len(shape.Faces)>256:raise ValueError('Interactive face selection supports up to 256 faces')
+    candidates=_targets(doc)
+    if len(candidates)>64:raise ValueError('Interactive dimension probing supports up to 64 candidates')
+    base=[_face_metric(f) for f in shape.Faces]
+    faces=[];triangle_count=0
+    for index,face in enumerate(shape.Faces):
+        vertices,triangles=face.tessellate(.35)
+        triangle_count+=len(triangles)
+        if triangle_count>50000:raise ValueError('Interactive viewer supports up to 50,000 triangles')
+        faces.append({'id':index+1,'surface':base[index][0],
+                      'triangles':[[round(value,5) for vertex in (vertices[i] for i in tri)
+                                    for value in (vertex.x,vertex.y,vertex.z)] for tri in triangles],
+                      'candidate_keys':[]})
+    for candidate in candidates:
+        value=candidate['value'];step=max(.05,abs(value)*.02)
+        entry={'object':candidate['object'],'kind':candidate['kind']}
+        if candidate['kind']=='property':entry['property']=candidate['dimension']
+        else:
+            # Unnamed sketch constraints are addressed by index until registered.
+            entry['constraint_index']=int(candidate['key'].rsplit('|',1)[1])
+        assigned=False
+        try:
+            _assign(doc,entry,value+step)
+            assigned=True
+            doc.recompute();changed=final.Shape
+            if changed.isNull() or not changed.isValid() or len(changed.Faces)!=len(faces):continue
+            after=[_face_metric(f) for f in changed.Faces]
+            for face,old,new in zip(faces,base,after):
+                if _face_changed(old,new):face['candidate_keys'].append(candidate['key'])
+        except Exception:
+            # A constrained/imported feature may reject perturbation.
+            continue
+        finally:
+            if assigned:_assign(doc,entry,value);doc.recompute()
+    b=shape.BoundBox
+    return {'final':final.Name,'bounds':[[b.XMin,b.YMin,b.ZMin],[b.XMax,b.YMax,b.ZMax]],
+            'faces':faces,'triangle_count':triangle_count,
+            'mapping_basis':'A small independent CAD recomputation; suggestions require user confirmation.'}
 
 
 def bootstrap(path):
@@ -164,6 +230,7 @@ def dispatch(request):
     doc=App.openDocument(str(request['document']))
     try:
         if action=='inspect':return inspect(doc)
+        if action=='surface':return surface_selection(doc)
         if action=='register':
             name=request['name']
             if not re.fullmatch(r'[a-z][a-z0-9_]{0,47}',name):raise ValueError('Use a unique lower-case parameter name')

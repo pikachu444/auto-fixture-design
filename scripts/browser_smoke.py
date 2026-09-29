@@ -70,6 +70,15 @@ try:
         page.locator('#show-native').click()
         page.locator('#native-new').click()
         page.locator('#native-target option').first.wait_for(state='attached',timeout=180000)
+        canvas=page.locator('#native-surface');canvas.wait_for(state='visible',timeout=180000)
+        bounds=canvas.bounding_box()
+        for x,y in ((.5,.5),(.4,.45),(.6,.55),(.5,.65)):
+            canvas.click(position={'x':bounds['width']*x,'y':bounds['height']*y})
+            if '선택한 솔리드 면' in page.locator('#native-face-help').inner_text():break
+        else:raise AssertionError('Clicking the FreeCAD solid did not select a face')
+        assert page.locator('#native-target option').count()>0
+        page.screenshot(path=str(out/'native-clicked-face.png'),full_page=True)
+        page.locator('#native-show-all').click()
         page.locator('#native-target').select_option('SupportBlock|property|Length')
         page.locator('#native-name').fill('browser_width')
         page.locator('#native-min').fill('28')
@@ -103,7 +112,7 @@ try:
             assert not any(n.endswith(('.stl','.step','.3mf')) for n in z.namelist())
         assert not errors,errors
         browser.close()
-    (out/'result.json').write_text(json.dumps({'status':'PASS','engine':'Chromium via Playwright','checks':['input edited to 20 mm','real CAD generation','report iframe','ZIP download and CAD files','modified geometry dimension verified','travel rejection shown','rejected ZIP contains report but no CAD','CAD source parameters loaded into form','CAD source width change rebuilt STEP and STL','CAD source relation rejected invalid geometry','FreeCAD feature dimension selected and named in browser','editable FCStd exported with modified STEP/STL/3MF','native hole edge land rejection without CAD','no JavaScript errors']},indent=2))
+    (out/'result.json').write_text(json.dumps({'status':'PASS','engine':'Chromium via Playwright','checks':['input edited to 20 mm','real CAD generation','report iframe','ZIP download and CAD files','modified geometry dimension verified','travel rejection shown','rejected ZIP contains report but no CAD','CAD source parameters loaded into form','CAD source width change rebuilt STEP and STL','CAD source relation rejected invalid geometry','clicked actual FreeCAD BREP face in 3D viewer','face-based CAD dimension suggestions shown','FreeCAD feature dimension selected and named in browser','editable FCStd exported with modified STEP/STL/3MF','native hole edge land rejection without CAD','no JavaScript errors']},indent=2))
 finally:
     process.terminate()
     try:process.wait(timeout=5)

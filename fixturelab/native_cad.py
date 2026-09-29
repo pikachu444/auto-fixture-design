@@ -53,7 +53,19 @@ def _path(design):
 def inspect(design):
     info=_run({'action':'inspect','document':str(_path(design))})
     return {'design':design,**info,'preview':f'/designs/{design}/preview.png',
+            'surface':f'/designs/{design}/surface.json' if (_path(design).parent/'surface.json').exists() else None,
             'editable':f'/designs/{design}/editable.FCStd'}
+
+
+def _refresh_surface(path):
+    target=path.parent/'surface.json'
+    target.unlink(missing_ok=True)
+    try:
+        surface=_run({'action':'surface','document':str(path)})
+        target.write_text(json.dumps(surface,ensure_ascii=False),encoding='utf-8')
+    except ValueError:
+        # A large or complex document can still be edited from its feature tree.
+        pass
 
 
 def _preview_step(step,target):
@@ -79,6 +91,7 @@ def create_sample(template='roller_support'):
     baseline.mkdir()
     _run({'action':'generate','document':str(path),'values':{},'output':str(baseline)})
     _preview_step(baseline/'native.step',path.parent/'preview.png')
+    _refresh_surface(path)
     return inspect(design)
 
 
@@ -96,7 +109,8 @@ def import_document(data):
         baseline=path.parent/'baseline';baseline.mkdir()
         generated=_run({'action':'generate','document':str(path),'values':{},'output':str(baseline)})
         if generated['decision']=='REVIEW_REQUIRED':_preview_step(baseline/'native.step',path.parent/'preview.png')
-    return info
+        _refresh_surface(path)
+    return inspect(design)
 
 
 def register(design,target,name,minimum,maximum,label=None):
@@ -114,7 +128,8 @@ def select_final(design,final):
     for old in baseline.iterdir():old.unlink()
     generated=_run({'action':'generate','document':str(path),'values':{},'output':str(baseline)})
     if generated['decision']=='REVIEW_REQUIRED':_preview_step(baseline/'native.step',path.parent/'preview.png')
-    return {'design':design,**info,'preview':f'/designs/{design}/preview.png'}
+    _refresh_surface(path)
+    return inspect(design)
 
 
 def execute(design,values,output):

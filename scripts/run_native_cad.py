@@ -11,6 +11,11 @@ def run():
     root=Path('artifacts/native_acceptance');root.mkdir(parents=True,exist_ok=True)
     info=native_cad.create_sample();design=info['design']
     assert info['parameters']==[]
+    assert info['surface']
+    surface=json.loads((native_cad.DESIGNS/design/'surface.json').read_text())
+    assert surface['triangle_count']>0 and surface['faces']
+    assert any('SupportBlock|property|Length' in face['candidate_keys'] for face in surface['faces'])
+    assert any('BoltBore1|property|Radius' in face['candidate_keys'] for face in surface['faces'])
     candidates={x['key'] for x in info['candidates']}
     assert {'SupportBlock|property|Length','RollerCradle|property|Radius',
             'BoltBore1|property|Radius'}<=candidates
@@ -39,6 +44,8 @@ def run():
     # rather than any of the Part::Box/Cylinder properties used above.
     sketch=native_cad.create_sample('sketch_locator')
     assert sketch['parameters']==[]
+    sketch_surface=json.loads((native_cad.DESIGNS/sketch['design']/'surface.json').read_text())
+    assert any('LocatorProfile|constraint|0' in face['candidate_keys'] for face in sketch_surface['faces'])
     assert 'LocatorProfile|constraint|0' in {x['key'] for x in sketch['candidates']}
     defined=native_cad.register(sketch['design'],'LocatorProfile|constraint|0',
                                 'my_locator_radius',2,10)
@@ -58,6 +65,8 @@ def run():
              'sketch_user_defined_parameter':defined['parameters'][0]['name'],
              'sketch_changed_bounds_mm':sketch_change['bounds_mm'],
              'ineffective_dimension_blocked':True}
+    summary['interactive_faces']=len(surface['faces'])
+    summary['sketch_interactive_faces']=len(sketch_surface['faces'])
     (root/'result.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
     print(json.dumps(summary,ensure_ascii=False))
 

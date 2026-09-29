@@ -14,6 +14,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path=unquote(urlparse(self.path).path)
         if path=='/':return self.send(200,(ROOT/'fixturelab/ui.html').read_bytes(),'text/html; charset=utf-8')
+        if path=='/surface_viewer.js':return self.send(200,(ROOT/'fixturelab/surface_viewer.js').read_bytes(),'text/javascript; charset=utf-8')
         if path=='/api/examples':
             manifest=json.loads((ROOT/'examples/suite.json').read_text())
             examples=[json.loads((ROOT/'examples'/item['file']).read_text()) for item in manifest]
@@ -21,11 +22,11 @@ class Handler(BaseHTTPRequestHandler):
         if path=='/api/models':
             from .model_cad import catalogue
             return self.send(200,json.dumps(catalogue(),ensure_ascii=False))
-        native_file=re.fullmatch(r'/designs/([a-f0-9]{32})/(editable\.FCStd|preview\.png)',path)
+        native_file=re.fullmatch(r'/designs/([a-f0-9]{32})/(editable\.FCStd|preview\.png|surface\.json)',path)
         if native_file:
             from .native_cad import _path
             try:
-                source=_path(native_file[1]);file=source if native_file[2]=='editable.FCStd' else source.parent/'preview.png'
+                source=_path(native_file[1]);file=source if native_file[2]=='editable.FCStd' else source.parent/native_file[2]
             except ValueError:return self.send(404,'{"error":"design missing"}')
             if not file.is_file():return self.send(404,'{"error":"preview not available"}')
             return self.send(200,file.read_bytes(),mimetypes.guess_type(str(file))[0] or 'application/octet-stream')

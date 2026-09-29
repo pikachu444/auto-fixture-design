@@ -221,7 +221,7 @@ def run(suite:Path,output:Path):
 
         if native_summary:
             page('07 · CAD 형상 치수를 사용자가 선택해 정의')
-            story.append(p('편집 가능한 FreeCAD 문서에는 시작할 때 노출된 사용자 파라미터가 0개입니다. 형상 트리에서 Part 피처 치수 세 개와 별도 Sketcher 구동 치수 하나를 선택해 이름·범위를 붙인 뒤 FCStd 파일에 저장했습니다. 정의를 추가해도 형상 생성 코드는 바뀌지 않습니다.',small))
+            story.append(p('편집 가능한 FreeCAD 문서에는 시작할 때 노출된 사용자 파라미터가 0개입니다. 3D 뷰에서 실제 솔리드의 면을 클릭하면 재계산으로 영향이 관찰된 치수를 후보로 보여 줍니다. 형상 트리에서 Part 피처 치수 세 개와 별도 Sketcher 구동 치수 하나를 선택해 이름·범위를 붙인 뒤 FCStd 파일에 저장했습니다.',small))
             story.append(Image(str(suite.parent/'native_acceptance/changed/preview.png'),width=W*.76,height=W*.76*560/1100))
             section('선택한 CAD 요소 → 원본 문서 → 재생성')
             story.append(grid(['형상 트리에서 고른 치수','사용자가 정의한 이름','실제 출력 근거'],[
@@ -233,7 +233,7 @@ def run(suite:Path,output:Path):
             story.append(Spacer(1,10))
             story.append(box('확인 결과',f'원본 폭 {native_summary["original_bounds_mm"][0]:g} → 변경 폭 {native_summary["changed_bounds_mm"][0]:g} mm. CAD 파일 무결성 {native_summary["change_cad_checks_passed"]}건 통과. 저장한 FCStd를 다시 열어 사용자 정의 {native_summary["reopened_definition_count"]}개 확인.',LIGHT))
             story.append(p('최종 출력 형상에 영향을 주지 않는 절단 공구 길이는 파라미터 등록 단계에서 거부했습니다.',small))
-            story.append(p('한계: Feature 속성과 Sketcher의 구동 치수가 있어야 선택할 수 있습니다. 임의 STEP 면 클릭만으로 설계 이력을 복원할 수는 없습니다. 이 모델의 실제 시험기 체결과 출력물 강도는 미검증입니다.',small))
+            story.append(p('한계: 면과 구동 치수의 관계는 변경 관찰에 기반한 제안이며 설계 의도의 증명은 아닙니다. 피처 또는 Sketcher의 구동 치수가 필요하고 임의 STEP 면만으로 이력을 복원할 수는 없습니다. 실제 시험기 체결과 출력물 강도는 미검증입니다.',small))
             story.append(p('원자료: native_acceptance/result.json, changed/editable.FCStd, native.step, assembly.step, STL/3MF 및 blocked/result.json.',tiny))
 
         def footer(canvas,document):
