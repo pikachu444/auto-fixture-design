@@ -5,7 +5,7 @@ import pytest
 
 from fixturelab.cad import build
 from fixturelab.core import evaluate
-from scripts.run_structural_screen import extract_vertical_displacements,parse_gmsh_inp,quadratic_tet_jacobian_quality,write_deck
+from scripts.run_structural_screen import elastic_material_lines,extract_vertical_displacements,parse_gmsh_inp,quadratic_tet_jacobian_quality,write_deck
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -59,3 +59,13 @@ def test_read_actual_solver_style_displacement_table(tmp_path):
     assert out['max_abs_vertical_displacement_mm']==pytest.approx(.031)
     with pytest.raises(RuntimeError,match='incomplete'):
         extract_vertical_displacements(dat,{10,11,12})
+
+
+def test_directional_material_requires_positive_definite_compliance():
+    material=json.loads((ROOT/'examples/printed_material_ASSUMED.json').read_text())
+    lines=elastic_material_lines(material)
+    assert lines[0]=='*ELASTIC, TYPE=ENGINEERING CONSTANTS'
+    assert len(lines[1].split(','))==8 and float(lines[2])==320
+    material['nu_12']=8
+    with pytest.raises(ValueError,match='positive definite'):
+        elastic_material_lines(material)

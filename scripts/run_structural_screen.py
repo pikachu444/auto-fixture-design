@@ -61,12 +61,36 @@ def quadratic_tet_jacobian_quality(nodes,elements):
     return float(minimum.min())
 
 
-def write_deck(path,nodes,elements,support,material,force_N):
-    E=material['elastic_modulus_MPa'];nu=material['poisson_ratio']
-    if not (0<E<1e7 and 0<=nu<.49 and math.isfinite(E) and math.isfinite(nu)):
-        raise ValueError('Invalid finite isotropic demonstration material')
+def elastic_material_lines(material):
     if not material.get('provenance') or not material.get('qualification'):
         raise ValueError('Material provenance and qualification status are required')
+    if material.get('model')=='orthotropic':
+        keys=('E_1_MPa','E_2_MPa','E_3_MPa','nu_12','nu_13','nu_23',
+              'G_12_MPa','G_13_MPa','G_23_MPa')
+        values=[material[k] for k in keys]
+        if not material.get('axes'):raise ValueError('Orthotropic CAD/print axes must be identified')
+        if not all(isinstance(x,(float,int)) and not isinstance(x,bool) and math.isfinite(x) for x in values):
+            raise ValueError('Finite material constants required')
+        E1,E2,E3,n12,n13,n23,G12,G13,G23=values
+        if min(E1,E2,E3,G12,G13,G23)<=0:raise ValueError('All orthotropic moduli must be positive')
+        compliance=np.array([[1/E1,-n12/E1,-n13/E1],
+                             [-n12/E1,1/E2,-n23/E2],
+                             [-n13/E1,-n23/E2,1/E3]])
+        if np.linalg.eigvalsh(compliance)[0]<=0:raise ValueError('Orthotropic compliance is not positive definite')
+        return ['*ELASTIC, TYPE=ENGINEERING CONSTANTS',
+                ', '.join(map(str,values[:8])),str(G23)]
+    if material.get('model')=='isotropic':
+        E=material['elastic_modulus_MPa'];nu=material['poisson_ratio']
+        if not (isinstance(E,(float,int)) and isinstance(nu,(float,int)) and
+                not isinstance(E,bool) and not isinstance(nu,bool) and
+                math.isfinite(E) and math.isfinite(nu) and 0<E<1e7 and 0<=nu<.49):
+            raise ValueError('Invalid finite isotropic material')
+        return ['*ELASTIC',f'{E}, {nu}']
+    raise ValueError('Material model must be isotropic or orthotropic')
+
+
+def write_deck(path,nodes,elements,support,material,force_N):
+    material_deck=elastic_material_lines(material)
     bb=support.BoundingBox();cx=(bb.xmin+bb.xmax)/2
     fixed=sorted(n for n,(x,y,z) in nodes.items() if abs(z-bb.zmin)<1e-4)
     # Nodes on the concave, cylindrical roller saddle, over central 24 mm.
@@ -95,8 +119,8 @@ def write_deck(path,nodes,elements,support,material,force_N):
     lines += [', '.join(map(str,fixed[i:i+12])) for i in range(0,len(fixed),12)]
     lines += ['*NSET, NSET=ROLLER_NODES']
     lines += [', '.join(map(str,loaded[i:i+12])) for i in range(0,len(loaded),12)]
-    lines += ['*MATERIAL, NAME=PRINT_ASSUMED','*ELASTIC',f'{E}, {nu}',
-              '*SOLID SECTION, ELSET=SUPPORT, MATERIAL=PRINT_ASSUMED',
+    lines += ['*MATERIAL, NAME=PRINT_INPUT',*material_deck,
+              '*SOLID SECTION, ELSET=SUPPORT, MATERIAL=PRINT_INPUT',
               '*STEP','*STATIC','*BOUNDARY','BASE_FIXED, 1, 3',
               '*CLOAD']
     lines += [f'{n}, 3, {-force_N/len(loaded):.12g}' for n in loaded]
@@ -105,6 +129,7 @@ def write_deck(path,nodes,elements,support,material,force_N):
               '*EL FILE','S','*END STEP']
     path.write_text('\n'.join(lines)+'\n')
     return {'fixed_node_count':len(fixed),'loaded_node_count':len(loaded),
+            'loaded_node_ids':loaded,
             'mesh_corner_volume_mm3':approximate,'cad_volume_mm3':cad,
             'mesh_volume_relative_error':abs(approximate/cad-1),
             'total_applied_force_N':force_N,'per_node_force_N':-force_N/len(loaded)}
@@ -162,8 +187,7 @@ def run(data,material,out,sizes):
         (folder/'ccx.log').write_text(ccx.stdout+'\n'+ccx.stderr)
         if ccx.returncode or not (folder/(job+'.frd')).is_file():
             raise RuntimeError(f'CalculiX failed: {folder/"ccx.log"}; tail: {ccx.stdout[-900:]} {ccx.stderr[-300:]}')
-        disp=extract_vertical_displacements(folder/(job+'.dat'),
-                                            {int(n) for n in re.findall(r'^([0-9]+), 3,',deck.read_text(),re.M)})
+        disp=extract_vertical_displacements(folder/(job+'.dat'),set(bc['loaded_node_ids']))
         studies.append({'mesh_size_max_mm':size,'nodes':len(nodes),'elements_C3D10':len(elements),
                         'minimum_quadratic_jacobian_mm3':min_jacobian,
                         'boundary':bc,'displacement':disp,
@@ -180,7 +204,7 @@ def run(data,material,out,sizes):
             'mesh_studies':studies,'displacement_mesh_change_ratio':rel,
             'limitations':['Fixed support bottom replaces actual bolts and base.',
                            'Roller contact replaced by distributed nodal force on cradle.',
-                           'Linear isotropic material is a hypothetical example, not measured printed orthotropy.',
+                           'Example directional print properties are hypothetical, not measured coupon data.',
                            'No strength allowables, stress convergence or physical print verification.',
                            'No production approval from this simulation.']}
     (out/'result.json').write_text(json.dumps(output,ensure_ascii=False,indent=2))

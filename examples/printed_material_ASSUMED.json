@@ -1,6 +1,15 @@
 {
-  "elastic_modulus_MPa": 1800,
-  "poisson_ratio": 0.35,
-  "provenance": "HYPOTHETICAL isotropic demo values, not measured print data",
+  "model": "orthotropic",
+  "E_1_MPa": 1800,
+  "E_2_MPa": 1800,
+  "E_3_MPa": 900,
+  "nu_12": 0.3,
+  "nu_13": 0.3,
+  "nu_23": 0.3,
+  "G_12_MPa": 650,
+  "G_13_MPa": 320,
+  "G_23_MPa": 320,
+  "axes": "1=CAD X, 2=CAD Y, 3=CAD Z (assumed print layer stacking)",
+  "provenance": "HYPOTHETICAL orthotropic demo values, not measured print data",
   "qualification": "ASSUMED_NOT_MEASURED"
 }
