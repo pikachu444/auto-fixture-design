@@ -16,7 +16,10 @@ import Part
 
 
 def _signature(shape):
-    b=shape.BoundBox;c=shape.CenterOfMass
+    b=shape.BoundBox
+    # Boolean results can be Part.Compound even when they hold exactly one
+    # valid solid. FreeCAD exposes CenterOfMass on the enclosed Part.Solid.
+    c=shape.Solids[0].CenterOfMass
     return (shape.Volume,shape.Area,b.XMin,b.XMax,b.YMin,b.YMax,b.ZMin,b.ZMax,
             c.x,c.y,c.z)
 
