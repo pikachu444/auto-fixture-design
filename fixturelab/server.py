@@ -97,7 +97,7 @@ class Handler(BaseHTTPRequestHandler):
             if size<=0 or size>maximum:raise ValueError('Request size is invalid')
             body=self.rfile.read(size)
             data={} if action=='import' else json.loads(body)
-            if action=='new':answer=native_cad.create_sample()
+            if action=='new':answer=native_cad.create_sample(data.get('template','roller_support'))
             elif action=='import':answer=native_cad.import_document(body)
             elif action=='register':
                 answer=native_cad.register(data['design'],data['target'],data['name'],

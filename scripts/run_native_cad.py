@@ -35,11 +35,29 @@ def run():
     imported=native_cad.import_document((root/'changed'/'editable.FCStd').read_bytes())
     assert set(x['name'] for x in imported['parameters'])=={
         'my_support_width','selected_cradle_radius','selected_bore_radius'}
+    # A separate sketch-driven document exercises a user-picked constraint,
+    # rather than any of the Part::Box/Cylinder properties used above.
+    sketch=native_cad.create_sample('sketch_locator')
+    assert sketch['parameters']==[]
+    assert 'LocatorProfile|constraint|0' in {x['key'] for x in sketch['candidates']}
+    defined=native_cad.register(sketch['design'],'LocatorProfile|constraint|0',
+                                'my_locator_radius',2,10)
+    assert defined['parameters'][0]['name']=='my_locator_radius'
+    sketch_change=native_cad.execute(sketch['design'],{'my_locator_radius':6},root/'sketch_changed')
+    assert sketch_change['cad_generated'] and sketch_change['bounds_mm'][0]==12
+    assert cq.importers.importStep(str(root/'sketch_changed'/'native.step')).val().BoundingBox().xlen==12
+    try:native_cad.register(design,'BoltBore1|property|Height','ineffective_cutter_height',20,40)
+    except ValueError as error:
+        assert 'no measurable effect' in str(error)
+    else:raise AssertionError('An ineffective CAD dimension was accepted')
     summary={'status':'PASS','design':design,'discovered_candidate_count':len(candidates),
              'user_defined_parameters':[p['name'] for p in info['parameters']],
              'original_bounds_mm':original['bounds_mm'],'changed_bounds_mm':changed['bounds_mm'],
              'change_cad_checks_passed':sum(c['status']=='PASS' for c in changed['cad_checks']),
-             'blocked_decision':blocked['decision'],'reopened_definition_count':len(imported['parameters'])}
+             'blocked_decision':blocked['decision'],'reopened_definition_count':len(imported['parameters']),
+             'sketch_user_defined_parameter':defined['parameters'][0]['name'],
+             'sketch_changed_bounds_mm':sketch_change['bounds_mm'],
+             'ineffective_dimension_blocked':True}
     (root/'result.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
     print(json.dumps(summary,ensure_ascii=False))
 

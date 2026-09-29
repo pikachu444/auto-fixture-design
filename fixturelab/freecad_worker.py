@@ -15,6 +15,16 @@ import FreeCAD as App
 import Part
 
 
+def _signature(shape):
+    b=shape.BoundBox;c=shape.CenterOfMass
+    return (shape.Volume,shape.Area,b.XMin,b.XMax,b.YMin,b.YMax,b.ZMin,b.ZMax,
+            c.x,c.y,c.z)
+
+
+def _changes_shape(before,after):
+    return any(abs(a-b)>max(1e-6,1e-7*max(abs(a),abs(b))) for a,b in zip(before,after))
+
+
 def _config(doc):
     obj=doc.getObject('FixtureConfiguration')
     if obj is None:
@@ -125,9 +135,29 @@ def bootstrap(path):
     return {'path':str(path)}
 
 
+def bootstrap_sketch(path):
+    import Sketcher
+    doc=App.newDocument('SketchFixture')
+    doc.Label='Editable sketch-driven cylindrical locator'
+    sketch=doc.addObject('Sketcher::SketchObject','LocatorProfile')
+    sketch.Label='Selectable locator circle'
+    sketch.addGeometry(Part.Circle(App.Vector(0,0,0),App.Vector(0,0,1),4),False)
+    sketch.addConstraint(Sketcher.Constraint('Radius',0,4.0))
+    solid=doc.addObject('Part::Extrusion','LocatorSolid')
+    solid.Label='Final printed cylindrical locator'
+    solid.Base=sketch;solid.Dir=App.Vector(0,0,8);solid.Solid=True
+    _save_registry(doc,{'parameters':[],'final':solid.Name})
+    doc.recompute()
+    if len(solid.Shape.Solids)!=1 or not solid.Shape.isValid():
+        raise RuntimeError('Sketch-driven CAD did not create one solid')
+    doc.saveAs(str(path));App.closeDocument(doc.Name)
+    return {'path':str(path)}
+
+
 def dispatch(request):
     action=request['action']
     if action=='bootstrap':return bootstrap(Path(request['document']))
+    if action=='bootstrap_sketch':return bootstrap_sketch(Path(request['document']))
     doc=App.openDocument(str(request['document']))
     try:
         if action=='inspect':return inspect(doc)
@@ -148,6 +178,15 @@ def dispatch(request):
                 obj=doc.getObject(selected['object']);index=int(selected['key'].rsplit('|',1)[1])
                 obj.renameConstraint(index,name)
                 entry['constraint']=name
+            before=_signature(_final(doc,registry).Shape)
+            step=max(.05,abs(value)*.02)
+            probe=value+step if value+step<=maximum else value-step
+            if probe<minimum or probe==value:raise ValueError('No room to test this CAD dimension')
+            _assign(doc,entry,probe);doc.recompute()
+            after=_signature(_final(doc,registry).Shape)
+            _assign(doc,entry,value);doc.recompute()
+            if not _changes_shape(before,after):
+                raise ValueError('This dimension has no measurable effect on the final solid')
             registry['parameters'].append(entry);_save_registry(doc,registry)
             doc.recompute();doc.save()
             return inspect(doc)
@@ -161,7 +200,8 @@ def dispatch(request):
             changes=request['values']
             if not isinstance(changes,dict) or set(changes)-{p['name'] for p in registry['parameters']}:
                 raise ValueError('Unknown native CAD parameter')
-            checks=[]
+            checks=[];previous=_signature(_final(doc,registry).Shape)
+            any_changed=False
             for entry in registry['parameters']:
                 value=changes.get(entry['name'],_read(doc,entry))
                 if isinstance(value,bool) or not isinstance(value,(float,int)) or not math.isfinite(value):
@@ -169,13 +209,19 @@ def dispatch(request):
                 passed=entry['min']<=value<=entry['max']
                 checks.append({'code':'range_'+entry['name'],'status':'PASS' if passed else 'FAIL',
                                'observed':value,'limit':[entry['min'],entry['max']]})
-                if passed:_assign(doc,entry,value)
+                if passed:
+                    any_changed|=abs(value-_read(doc,entry))>1e-9
+                    _assign(doc,entry,value)
             if any(c['status']=='FAIL' for c in checks):
                 return {'decision':'REJECTED','checks':checks,'parameters':{p['name']:changes.get(p['name'],_read(doc,p)) for p in registry['parameters']}}
             doc.recompute()
             final=_final(doc,registry);shape=final.Shape
             if shape.isNull() or not shape.isValid() or len(shape.Solids)!=1 or shape.Volume<=0:
                 checks.append({'code':'native_brep','status':'FAIL','observed':'Invalid or multiple solids'})
+                return {'decision':'REJECTED','checks':checks}
+            if any_changed and not _changes_shape(previous,_signature(shape)):
+                checks.append({'code':'parameter_affects_final_shape','status':'FAIL',
+                               'observed':'Changed inputs left the final solid unchanged'})
                 return {'decision':'REJECTED','checks':checks}
             # This named example additionally checks actual cutter positions against
             # the changed block. Other documents need their own engineering rules.

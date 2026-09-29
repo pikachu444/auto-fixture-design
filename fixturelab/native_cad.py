@@ -69,9 +69,12 @@ def _new_path():
     return design,folder/'editable.FCStd'
 
 
-def create_sample():
+def create_sample(template='roller_support'):
+    if template not in ('roller_support','sketch_locator'):
+        raise ValueError('Unknown native CAD template')
     design,path=_new_path()
-    _run({'action':'bootstrap','document':str(path)})
+    _run({'action':'bootstrap' if template=='roller_support' else 'bootstrap_sketch',
+          'document':str(path)})
     baseline=path.parent/'baseline'
     baseline.mkdir()
     _run({'action':'generate','document':str(path),'values':{},'output':str(baseline)})

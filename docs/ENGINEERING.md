@@ -104,6 +104,8 @@ GitHub Actions는 저장소에 구현된 코드를 실행·테스트하고 결�
 
 값 변경은 FreeCAD에서 해당 피처 속성 또는 `SketchObject.setDatum`에 적용하고 `recompute()`한 뒤 단일 유효 솔리드를 STEP으로 내보냅니다. 기존 CAD 파일 검사기가 STEP 재읽기·STL/3MF의 밀폐성·치수·체적을 검사합니다. 샘플은 볼트 구멍의 실제 중심/반경과 블록 외곽으로 최소 2 mm 여유도 따로 검사합니다. 다른 문서의 설계 규칙을 이 샘플 규칙으로 대체하지 않습니다. 실제 시험기 장착·출력 재료 허용값·체결 해석은 미구현이며, 편집 이력이 없는 STEP만으로 파라메트릭 피처를 역생성하지 않습니다.
 
+파라미터 등록 단계에서는 허용 범위 내에서 치수를 소폭 변경해 최종 솔리드의 체적·면적·외곽·무게중심이 바뀌는지 확인합니다. 관찰 가능한 형상 변화가 없으면 등록을 거부합니다. 이는 국부 형상 변화의 완전한 증명이 아니므로 변경 후에도 CAD 파일 검사를 다시 수행합니다. 별도 원형 Sketcher 예제에서 반경 구속을 사용자 이름으로 정의해 외경이 바뀌는 것도 실제 실행으로 검사합니다.
+
 FreeCAD 공식 자료: [Sketcher 치수 구속 편집과 이름 지정](https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/Sketcher_Workbench.md), [Headless 실행과 스크립트](https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/Start_up_and_Configuration.md).
 
 GitHub 공식: [워크플로 아티팩트](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflow-artifacts), [수동 실행](https://docs.github.com/actions/managing-workflow-runs/manually-running-a-workflow). CAD 공식: [CadQuery 입출력](https://cadquery.readthedocs.io/en/latest/importexport.html), [Trimesh](https://trimesh.org/).

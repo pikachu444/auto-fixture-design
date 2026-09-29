@@ -221,16 +221,18 @@ def run(suite:Path,output:Path):
 
         if native_summary:
             page('07 · CAD 형상 치수를 사용자가 선택해 정의')
-            story.append(p('편집 가능한 FreeCAD 문서에는 시작할 때 노출된 사용자 파라미터가 0개입니다. 실행 중 형상 트리에서 치수 세 개를 사용자가 선택해 이름·범위를 붙인 뒤 같은 FCStd 파일에 저장했습니다. 정의를 추가해도 형상 생성 코드는 바뀌지 않습니다.',small))
+            story.append(p('편집 가능한 FreeCAD 문서에는 시작할 때 노출된 사용자 파라미터가 0개입니다. 형상 트리에서 Part 피처 치수 세 개와 별도 Sketcher 구동 치수 하나를 선택해 이름·범위를 붙인 뒤 FCStd 파일에 저장했습니다. 정의를 추가해도 형상 생성 코드는 바뀌지 않습니다.',small))
             story.append(Image(str(suite.parent/'native_acceptance/changed/preview.png'),width=W*.76,height=W*.76*560/1100))
             section('선택한 CAD 요소 → 원본 문서 → 재생성')
             story.append(grid(['형상 트리에서 고른 치수','사용자가 정의한 이름','실제 출력 근거'],[
               ('SupportBlock.Length','my_support_width','32 → 38 mm; STEP 외곽 X = 38 mm'),
               ('RollerCradle.Radius','selected_cradle_radius','4.15 → 5 mm; 홈 재계산'),
-              ('BoltBore1.Radius','selected_bore_radius','2.25 → 5 mm이면 외곽 여유 < 2 mm; REJECTED, STEP 없음')
+              ('BoltBore1.Radius','selected_bore_radius','2.25 → 5 mm이면 외곽 여유 < 2 mm; REJECTED, STEP 없음'),
+              ('LocatorProfile.Radius 구속','my_locator_radius','스케치 반경 4 → 6 mm; 별도 STEP 외곽 지름 12 mm')
             ],[W*.32,W*.30,W*.38]))
             story.append(Spacer(1,10))
             story.append(box('확인 결과',f'원본 폭 {native_summary["original_bounds_mm"][0]:g} → 변경 폭 {native_summary["changed_bounds_mm"][0]:g} mm. CAD 파일 무결성 {native_summary["change_cad_checks_passed"]}건 통과. 저장한 FCStd를 다시 열어 사용자 정의 {native_summary["reopened_definition_count"]}개 확인.',LIGHT))
+            story.append(p('최종 출력 형상에 영향을 주지 않는 절단 공구 길이는 파라미터 등록 단계에서 거부했습니다.',small))
             story.append(p('한계: Feature 속성과 Sketcher의 구동 치수가 있어야 선택할 수 있습니다. 임의 STEP 면 클릭만으로 설계 이력을 복원할 수는 없습니다. 이 모델의 실제 시험기 체결과 출력물 강도는 미검증입니다.',small))
             story.append(p('원자료: native_acceptance/result.json, changed/editable.FCStd, native.step, assembly.step, STL/3MF 및 blocked/result.json.',tiny))
 
