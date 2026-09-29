@@ -5,7 +5,7 @@ import pytest
 
 from fixturelab.cad import build
 from fixturelab.core import evaluate
-from scripts.run_structural_screen import extract_vertical_displacements,parse_gmsh_inp,write_deck
+from scripts.run_structural_screen import extract_vertical_displacements,parse_gmsh_inp,quadratic_tet_jacobian_quality,write_deck
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -30,6 +30,10 @@ def test_mesh_import_and_actual_support_boundary_deck(tmp_path):
 ''')
     nodes,elements=parse_gmsh_inp(mesh)
     assert len(nodes)==10 and elements[1]==tuple(range(1,11))
+    assert quadratic_tet_jacobian_quality(nodes,elements)>0
+    nodes[10]=(0,.5,-100)
+    with pytest.raises(RuntimeError,match='Jacobian'):
+        quadratic_tet_jacobian_quality(nodes,elements)
     data=json.loads((ROOT/'examples/bend_8mm.json').read_text())
     material=json.loads((ROOT/'examples/printed_material_ASSUMED.json').read_text())
     support=next(p['shape'] for p in build(evaluate(data)) if p['name']=='printed_support_left')

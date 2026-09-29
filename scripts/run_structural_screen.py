@@ -42,6 +42,25 @@ def parse_gmsh_inp(path):
     return nodes,elements
 
 
+def quadratic_tet_jacobian_quality(nodes,elements):
+    """Check all C3D10 Jacobians at the four standard Gauss points."""
+    tags=np.fromiter(elements,dtype=int)
+    coords=np.array([[nodes[n] for n in ids] for ids in elements.values()])
+    dL=np.array([[-1,-1,-1],[1,0,0],[0,1,0],[0,0,1]],dtype=float)
+    minimum=np.full(len(tags),np.inf)
+    for corner in range(4):
+        L=np.full(4,.1381966011250105);L[corner]=.5854101966249685
+        deriv=np.empty((10,3))
+        for a in range(4):deriv[a]=(4*L[a]-1)*dL[a]
+        for k,(a,b) in enumerate(((0,1),(1,2),(2,0),(0,3),(1,3),(2,3)),4):
+            deriv[k]=4*(L[a]*dL[b]+L[b]*dL[a])
+        jac=np.einsum('nic,ir->ncr',coords,deriv)
+        minimum=np.minimum(minimum,np.linalg.det(jac))
+    bad=tags[minimum<=1e-10]
+    if len(bad):raise RuntimeError(f'Nonpositive curved C3D10 Jacobians: {len(bad)}; first element IDs {bad[:10].tolist()}')
+    return float(minimum.min())
+
+
 def write_deck(path,nodes,elements,support,material,force_N):
     E=material['elastic_modulus_MPa'];nu=material['poisson_ratio']
     if not (0<E<1e7 and 0<=nu<.49 and math.isfinite(E) and math.isfinite(nu)):
@@ -126,12 +145,17 @@ def run(data,material,out,sizes):
         job=f'support_{idx}'
         folder=out/job;folder.mkdir()
         mesh=folder/'gmsh.inp'
+        # Linear interpolation of second-order midside nodes keeps all tetrahedra
+        # valid near the small bore/counterbore intersection. The triangulated
+        # boundary approximates STEP curvature; refinement assesses that error.
         gmsh=subprocess.run(['gmsh',str(step.resolve()),'-3','-order','2','-format','inp','-o',str(mesh.resolve()),
-                             '-clmin',str(size/2),'-clmax',str(size),'-optimize','-optimize_ho','-nopopup','-v','2'],
+                             '-clmin',str(size/2),'-clmax',str(size),'-setnumber','Mesh.SecondOrderLinear','1',
+                             '-nopopup','-v','2'],
                             cwd=folder,text=True,capture_output=True,timeout=180)
         (folder/'gmsh.log').write_text(gmsh.stdout+'\n'+gmsh.stderr)
         if gmsh.returncode or not mesh.is_file():raise RuntimeError(f'Gmsh failed: {folder/"gmsh.log"}')
         nodes,elements=parse_gmsh_inp(mesh)
+        min_jacobian=quadratic_tet_jacobian_quality(nodes,elements)
         deck=folder/(job+'.inp')
         bc=write_deck(deck,nodes,elements,support,material,F)
         ccx=subprocess.run(['ccx',job],cwd=folder,text=True,capture_output=True,timeout=300)
@@ -141,6 +165,7 @@ def run(data,material,out,sizes):
         disp=extract_vertical_displacements(folder/(job+'.dat'),
                                             {int(n) for n in re.findall(r'^([0-9]+), 3,',deck.read_text(),re.M)})
         studies.append({'mesh_size_max_mm':size,'nodes':len(nodes),'elements_C3D10':len(elements),
+                        'minimum_quadratic_jacobian_mm3':min_jacobian,
                         'boundary':bc,'displacement':disp,
                         'files':{'mesh':str(mesh.relative_to(out)),
                                  'deck':str(deck.relative_to(out)),

@@ -111,7 +111,7 @@ def run(suite:Path,output:Path):
             fe=json.loads(structural.read_text(encoding='utf-8'))
             coarse,fine=fe['mesh_studies']
             story.extend([text('굽힘 출력 지지대 3D 유한요소 예비해석',subtitle),
-                          text(f'Gmsh의 CAD 곡면 메시(C3D10)와 CalculiX를 사용했습니다. 지지대당 하중 {fmt(fe["force_per_support_N"]," N")}, 요소 수 {coarse["elements_C3D10"]:,} → {fine["elements_C3D10"]:,}, 롤러 받침부 최대 수직 변위 {fmt(coarse["displacement"]["max_abs_vertical_displacement_mm"]," mm")} → {fmt(fine["displacement"]["max_abs_vertical_displacement_mm"]," mm")}. 메시 변경에 따른 변위 차이는 {fmt(fe["displacement_mesh_change_ratio"]*100,"%")}. 결과 파일은 suite/structural_screen/에 있습니다.'),
+                          text(f'Gmsh의 STEP 경계 근사 사면체 메시(C3D10)와 CalculiX를 사용했습니다. 지지대당 하중 {fmt(fe["force_per_support_N"]," N")}, 요소 수 {coarse["elements_C3D10"]:,} → {fine["elements_C3D10"]:,}, 롤러 받침부 최대 수직 변위 {fmt(coarse["displacement"]["max_abs_vertical_displacement_mm"]," mm")} → {fmt(fine["displacement"]["max_abs_vertical_displacement_mm"]," mm")}. 메시 변경에 따른 변위 차이는 {fmt(fe["displacement_mesh_change_ratio"]*100,"%")}. 결과 파일은 suite/structural_screen/에 있습니다.'),
                           text('출력 재료 탄성계수는 측정값이 아닌 가정입니다. 지지대 하단 완전 고정·롤러 절점 하중을 적용했고 베이스·볼트·접촉·출력 이방성은 생략했습니다. 변위 수렴은 강도나 응력 수렴을 증명하지 않습니다.',small)])
         story.extend([text('제품 판정',subtitle),
                       text('전체 제작 승인 상태는 UNKNOWN입니다. 굽힘 지그 강도, 체결, 시험기 장착부, 출력 소재와 방향, 슬라이싱, 실제 출력과 단계 하중 시험은 미검증입니다. 필름 정렬 및 폼 압축용 출력 부품은 하중 시험 전 제거해야 합니다. 반경 확인구는 반복 피로시험 장치가 아닙니다.'),
