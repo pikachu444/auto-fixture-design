@@ -8,7 +8,7 @@
 
 1. [Actions](https://github.com/pikachu444/auto-fixture-design/actions/workflows/fixture-ci.yml)에서 최신 완료 실행을 엽니다.
 2. **Artifacts → fixture-results-커밋SHA**를 다운로드합니다.
-3. 압축을 풀고 **`suite/REPORT.pdf`**를 열면 결과를 PDF로 바로 볼 수 있습니다. `suite/index.html`에는 사례별 상세 보고서가 있고, 각 사례 폴더에는 CAD, HTML/Markdown 보고서, JSON, BOM이 있습니다.
+3. 압축을 풀고 **`suite/DESIGN_VERIFICATION.pdf`**를 열면 요구조건·계산·CAD 증거·차단 사례·수계산/해석·미검증 범위를 정리한 설계 검증 보고서를 볼 수 있습니다. `suite/REPORT.pdf`는 간단한 실행 요약입니다. `suite/index.html`에는 사례별 상세 보고서가 있고, 각 사례 폴더에는 CAD, HTML/Markdown 보고서, JSON, BOM이 있습니다.
 
 `main`에 코드를 올리거나 PR을 만들 때 자동 실행하며 **Run workflow**로 수동 실행할 수도 있습니다. 저장 기간은 30일입니다. CI 성공은 계산·소프트웨어 회귀 검사 성공이며, 실물 제작 승인이 아닙니다.
 
@@ -63,6 +63,8 @@ macOS / Linux:
 
 브라우저에서 `http://127.0.0.1:8765`를 엽니다. 사례를 선택하고 입력을 수정한 다음 **CAD 생성 및 검증 실행**을 누릅니다. 실제 생성 보고서를 표시하고 ZIP을 다운로드합니다. 로컬 접속만 허용하며 CAD 생성은 시간 제한이 있는 별도 프로세스에서 수행합니다.
 
+화면에는 정적인 CAD 미리보기만 있습니다. 화면에서 형상을 회전하거나 부품 치수를 직접 편집하는 3D 편집기와 유한요소해석 실행 버튼은 없습니다. 굽힘 지지대의 예비해석은 위 CLI 명령 또는 GitHub Actions에서 별도로 실행합니다. 템플릿을 선택하고 부적합한 조건을 차단하지만 자동으로 지그를 최적화하거나 대체 설계를 찾지는 않습니다.
+
 ## 명령줄 / 자동화
 
 가상환경을 활성화한 터미널에서:
@@ -80,9 +82,16 @@ python -m fixturelab generate --input examples/bend_8mm.json --output artifacts/
 python -m pip install -r requirements-dev.txt
 python -m pytest --junitxml=artifacts/unit-tests.xml
 python -m fixturelab suite --output artifacts/test-suite
-python scripts/build_ci_report.py --suite artifacts/test-suite --output artifacts/test-suite/REPORT.pdf
 python -m playwright install chromium
 python scripts/browser_smoke.py
+```
+
+설계 검증 PDF는 구조해석 결과까지 필요합니다. Gmsh와 CalculiX를 설치한 환경에서 suite 실행 후 다음을 추가로 실행합니다.
+
+```bash
+python -m scripts.run_structural_screen --input examples/bend_8mm.json --material examples/printed_material_ASSUMED.json --output artifacts/test-suite/structural_screen
+python scripts/build_ci_report.py --suite artifacts/test-suite --output artifacts/test-suite/REPORT.pdf
+python -m scripts.build_design_verification_report --suite artifacts/test-suite --output artifacts/test-suite/DESIGN_VERIFICATION.pdf
 ```
 
 브라우저 검사는 Chromium에서 시편 폭을 변경하고 실제 CAD를 생성한 뒤 ZIP 내부 치수가 바뀌었는지 확인합니다. 이어서 이동량 부족 사례가 거부되는지 검사합니다. GitHub Actions는 브라우저 실행에 필요한 Linux 시스템 라이브러리도 설치합니다.
